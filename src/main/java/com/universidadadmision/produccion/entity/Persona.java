@@ -1,6 +1,9 @@
 package com.universidadadmision.produccion.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "persona", schema="General" )
-public class Persona  implements Serializable {
+public class Persona  extends Auditable<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -41,4 +44,30 @@ public class Persona  implements Serializable {
 	
 	@Column(name="apellido_materno")
 	private String apellido_materno;
+	
+	@Column(name="sexo")
+	private Long sexo;
+	
+	@Column(name="email")
+	private String email;
+	
+	@Column(name="celular")
+	private String celular;
+	
+	@Column(name="telefono")
+	private String telefono;
+	
+	@JsonFormat( pattern="yyyy-MM-dd" )
+	@Column(name="fecha_nacimiento")
+    private LocalDate fecha_nacimiento;
+	
+	@Column(name="direccion")
+	private String direccion;
+	
+	@Column(name="ubigeo_id")
+	private Long ubigeo_id;
+	
+	@Column(name="estado_auditoria")
+	private boolean estado;
+	
 }

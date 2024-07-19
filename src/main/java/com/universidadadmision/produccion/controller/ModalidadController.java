@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.universidadadmision.produccion.dto.GrupoDtoRxperiodo;
 import com.universidadadmision.produccion.dto.ModalidadDto;
 import com.universidadadmision.produccion.dto.ModalidadDtoR;
 import com.universidadadmision.produccion.entity.Modalidad;
@@ -32,7 +34,7 @@ public class ModalidadController {
 		
 		Modalidad modalidadnew = new Modalidad();
 		modalidadnew.setNombre(modalidadDtor.getNombre());
-		modalidadnew.setTipo_ingreso_id(modalidadDtor.getTipo_ingreso_id());
+		modalidadnew.setTipoingresoid(modalidadDtor.getTipo_ingreso_id());
 		modalidadnew.setEstado(true);
 		modalidadnew.prePersist();
 		try {
@@ -55,8 +57,14 @@ public class ModalidadController {
 	
 	@PostMapping("/lista")
 	public ResponseEntity<?> ListaModalidad() throws Exception {
-		List<ModalidadDto> tipoingresolista = modalidadservice.listartodos();
-		return ResponseEntity.ok(tipoingresolista);
+		List<ModalidadDto> modalidadlista = modalidadservice.listartodos();
+		return ResponseEntity.ok(modalidadlista);
+	}
+	
+	@PostMapping("/listaxtipoingreso")
+	public ResponseEntity<?> ListaModalidadxTipoIngreso(@RequestBody GrupoDtoRxperiodo grupoxperiodo) throws Exception {
+		List<Modalidad> modalidadlistaxtipoingreso = modalidadservice.listarxtipoingreso(grupoxperiodo.getIdtipo());
+		return ResponseEntity.ok(modalidadlistaxtipoingreso);
 	}
 	
 	@PostMapping("/edita")
@@ -72,7 +80,7 @@ public class ModalidadController {
 			return ResponseEntity.ok(response);
 		}
 		modalidadedita.setNombre(modalidadDtor.getNombre());
-		modalidadedita.setTipo_ingreso_id(modalidadDtor.getTipo_ingreso_id());
+		modalidadedita.setTipoingresoid(modalidadDtor.getTipo_ingreso_id());
 		modalidadedita.setEstado(modalidadDtor.isEstado());
 		modalidadedita.preUpdate();
 		try {

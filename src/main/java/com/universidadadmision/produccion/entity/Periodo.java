@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "modalidad", schema="Admision" )
-public class Modalidad extends Auditable<String> implements Serializable {
-	private static final long serialVersionUID = 1L;
+@Table(name = "periodo", schema="General" )
+public class Periodo implements Serializable {
+private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -30,9 +30,13 @@ public class Modalidad extends Auditable<String> implements Serializable {
 	@Column(name="nombre")
 	private String nombre;
 	
-	@Column(name="tipo_ingreso_id")
-	private Long tipoingresoid;
-	
 	@Column(name="estado_auditoria")
 	private boolean estado;
+	
+	@Column(name="periodo_tipo_id")
+	private Long periodotipo;
+	
+	@Column(name="anio_semestre")
+	private String anio_semestre;
+	
 }

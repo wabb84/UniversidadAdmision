@@ -34,4 +34,9 @@ public class ModalidadServiceImpl implements ModalidadService {
 		return modalidadrep.ListaModalidad();
 	}
 
+	@Override
+	public List<Modalidad> listarxtipoingreso(Long idtipo){
+		return modalidadrep.findByTipoingresoid(idtipo);
+	};
+	
 }

@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "postulantes", schema="Admision" )
-public class Postulantes extends Auditable<String> implements Serializable {
+@Table(name = "Requisitos_Modalidad", schema="Admision" )
+public class RequisitosModalidad  implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -27,27 +27,12 @@ public class Postulantes extends Auditable<String> implements Serializable {
 	@Column(name="id", unique=true, nullable=false)
 	private Long id;
 	
-	@Column(name="persona_id")
-	private Long personaid;
+	@Column(name="modalidad_id")
+	private Long modalidadid;
 	
-	@Column(name="vacante_id")
-	private Long vacanteid;
+	@Column(name="requisito_id")
+	private String requisitoid;
 	
-	@Column(name="codigo")
-	private String codigo;
-	
-	@Column(name="grupo_id")
-	private Long grupo_id;
-	
-	@Column(name="modalidad_ingreso_id")
-	private Long modalidad_ingreso_id;
-	
-	@Column(name="nota")
-	private Long nota;
-	
-	@Column(name="estado_postulante")
-	private String estado_postulante;
-	
-	@Column(name="estado_auditoria")
-	private boolean estado;
+	@Column(name="tipo_requisito")
+	private String tipo_requisito;
 }

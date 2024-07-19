@@ -27,10 +27,10 @@ public class Grupo extends Auditable<String> implements Serializable{
 	private String nombre;
 	
 	@Column(name="periodo_id")
-	private Long periodo_id;
+	private Long periodoid;
 	
 	@Column(name="tipo_ingreso_id")
-	private Long tipo_ingreso_id;
+	private Long tipoingresoid;
 	
 	@JsonFormat( pattern="yyyy-MM-dd" )
 	@Column(name="fecha_inicio")

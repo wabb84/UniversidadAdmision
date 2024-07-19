@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.universidadadmision.produccion.dto.GrupoDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
+import com.universidadadmision.produccion.dto.GrupoDtoRxperiodo;
 import com.universidadadmision.produccion.entity.Grupo;
 import com.universidadadmision.produccion.service.GrupoService;
 
@@ -32,8 +33,8 @@ public class GrupoController {
 		
 		Grupo gruponew = new Grupo();
 		gruponew.setNombre(grupoDtor.getNombre());
-		gruponew.setPeriodo_id(grupoDtor.getPeriodo_id());
-		gruponew.setTipo_ingreso_id(grupoDtor.getTipo_ingreso_id());
+		gruponew.setPeriodoid(grupoDtor.getPeriodo_id());
+		gruponew.setTipoingresoid(grupoDtor.getTipo_ingreso_id());
 		gruponew.setFecha_inicio(grupoDtor.getFecha_inicio());
 		gruponew.setFecha_fin(grupoDtor.getFecha_fin());
 		gruponew.setFecha_inicio_evaluacion(grupoDtor.getFecha_inicio_evaluacion());
@@ -71,8 +72,8 @@ public class GrupoController {
 		}
 		
 		grupodedita.setNombre(grupoDtor.getNombre());
-		grupodedita.setPeriodo_id(grupoDtor.getPeriodo_id());
-		grupodedita.setTipo_ingreso_id(grupoDtor.getTipo_ingreso_id());
+		grupodedita.setPeriodoid(grupoDtor.getPeriodo_id());
+		grupodedita.setTipoingresoid(grupoDtor.getTipo_ingreso_id());
 		grupodedita.setFecha_inicio(grupoDtor.getFecha_inicio());
 		grupodedita.setFecha_fin(grupoDtor.getFecha_fin());
 		grupodedita.setFecha_inicio_evaluacion(grupoDtor.getFecha_inicio_evaluacion());
@@ -100,6 +101,12 @@ public class GrupoController {
 	public ResponseEntity<?> ListaGrupo() throws Exception {
 		List<GrupoDto> grupolista = gruposervice.listartodos();
 		return ResponseEntity.ok(grupolista);
+	}
+	
+	@PostMapping("/listaxperido")
+	public ResponseEntity<?> ListaGrupoxPeriodo(@RequestBody GrupoDtoRxperiodo grupoxperiodo) throws Exception {
+		List<Grupo> grupolistaxperiodo = gruposervice.listarxperiodo(grupoxperiodo.getIdperiodo(),grupoxperiodo.getIdtipo());
+		return ResponseEntity.ok(grupolistaxperiodo);
 	}
 	
 	@PostMapping("/elimina")

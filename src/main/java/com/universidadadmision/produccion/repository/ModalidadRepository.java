@@ -18,4 +18,6 @@ public interface ModalidadRepository extends JpaRepository<Modalidad, Long> {
 			+ "   order by a.id", nativeQuery = true )
 	
 	public List<ModalidadDto> ListaModalidad();
+	
+	public List<Modalidad> findByTipoingresoid(Long tipoingresoid);
 }

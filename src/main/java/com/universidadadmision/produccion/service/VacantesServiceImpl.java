@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.universidadadmision.produccion.dto.VacantesDto;
 import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.repository.VacantesRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,4 +35,8 @@ public class VacantesServiceImpl implements VacantesService {
 		return vacantesrep.ListaVacantes();
 	}
 
+	@Override
+	public Vacantes findByPeriodoidAndSedeidAndCarreraid(Long idperiodo, Long idsede, Long idcarrera){
+		return vacantesrep.findByPeriodoidAndSedeidAndCarreraid(idperiodo, idsede, idcarrera);
+	};
 }

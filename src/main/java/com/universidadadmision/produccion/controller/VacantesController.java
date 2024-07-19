@@ -35,9 +35,9 @@ public class VacantesController {
 		Map<String, Object> response = new HashMap<>();
 		
 		Vacantes vacantesnew = new Vacantes();
-		vacantesnew.setPeriodo_id(vacantesDtor.getPeriodo_id());
-		vacantesnew.setSede_id(vacantesDtor.getSede_id());
-		vacantesnew.setCarrera_id(vacantesDtor.getCarrera_id());
+		vacantesnew.setPeriodoid(vacantesDtor.getPeriodo_id());
+		vacantesnew.setSedeid(vacantesDtor.getSede_id());
+		vacantesnew.setCarreraid(vacantesDtor.getCarrera_id());
 		vacantesnew.setVacantes(vacantesDtor.getVacantes());
 		vacantesnew.setEstado(true);
 		vacantesnew.prePersist();
@@ -72,9 +72,9 @@ public class VacantesController {
 			return ResponseEntity.ok(response);
 		}
 		
-		vacantesedita.setPeriodo_id(vacantesDtor.getPeriodo_id());
-		vacantesedita.setSede_id(vacantesDtor.getSede_id());
-		vacantesedita.setCarrera_id(vacantesDtor.getCarrera_id());
+		vacantesedita.setPeriodoid(vacantesDtor.getPeriodo_id());
+		vacantesedita.setSedeid(vacantesDtor.getSede_id());
+		vacantesedita.setCarreraid(vacantesDtor.getCarrera_id());
 		vacantesedita.setVacantes(vacantesDtor.getVacantes());
 		vacantesedita.setEstado(vacantesDtor.isEstado());
 		vacantesedita.preUpdate();

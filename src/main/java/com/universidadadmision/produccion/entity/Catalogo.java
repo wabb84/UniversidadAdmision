@@ -1,7 +1,6 @@
 package com.universidadadmision.produccion.entity;
 
 import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "postulantes", schema="Admision" )
-public class Postulantes extends Auditable<String> implements Serializable {
+@Table(name = "catalogo", schema="General" )
+public class Catalogo  implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -27,27 +26,9 @@ public class Postulantes extends Auditable<String> implements Serializable {
 	@Column(name="id", unique=true, nullable=false)
 	private Long id;
 	
-	@Column(name="persona_id")
-	private Long personaid;
+	@Column(name="descripcion")
+	private String descripcion;
 	
-	@Column(name="vacante_id")
-	private Long vacanteid;
-	
-	@Column(name="codigo")
-	private String codigo;
-	
-	@Column(name="grupo_id")
-	private Long grupo_id;
-	
-	@Column(name="modalidad_ingreso_id")
-	private Long modalidad_ingreso_id;
-	
-	@Column(name="nota")
-	private Long nota;
-	
-	@Column(name="estado_postulante")
-	private String estado_postulante;
-	
-	@Column(name="estado_auditoria")
-	private boolean estado;
+	@Column(name="catalogo_tipo_id")
+	private Long catalogo_tipo_id;
 }

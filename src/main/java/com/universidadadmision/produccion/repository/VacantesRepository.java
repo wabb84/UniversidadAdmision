@@ -1,7 +1,6 @@
 package com.universidadadmision.produccion.repository;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +20,12 @@ public interface VacantesRepository  extends JpaRepository<Vacantes, Long> {
 			+ "   order by a.id", nativeQuery = true )
 	
 	public List<VacantesDto> ListaVacantes();
+	
+	//@Transactional(readOnly=true)
+	//@Query(value = "select id from Admision.vacantes where periodo_id = :idperiodo and sede_id = :idsede and carrera_id = :idcarrera", nativeQuery = true )
+	//@Query(value = "select id from Admision.vacantes where periodo_id = :idperiodo and sede_id = :idsede", nativeQuery = true )
+	
+	//public Vacantes ListaVacantesF(Long idperiodo, Long idsede, Long idcarrera);
+	//public Vacantes ListaVacantesF(Long idperiodo, Long idsede, Long idcarrera);
+	public Vacantes findByPeriodoidAndSedeidAndCarreraid(Long idperiodo, Long idsede, Long idcarrera);
 }

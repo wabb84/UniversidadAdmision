@@ -1,5 +1,7 @@
 package com.universidadadmision.produccion.dto;
 
+import java.time.LocalDate;
+
 public interface PostulantesDto {
 	Long getId();
 	Long getPersonaid();
@@ -14,4 +16,11 @@ public interface PostulantesDto {
 	String getNombremodalidad();
 	String getEstado_postulante();
 	boolean getEstado();
+	Long getSexo();
+	String getDireccion();
+	String getEmail();
+	String getCelular();
+	String getTelefono();
+	Long getUbigeo_id();
+	LocalDate getFecha_nacimiento();
 }

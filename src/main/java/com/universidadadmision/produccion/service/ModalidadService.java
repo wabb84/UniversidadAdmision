@@ -10,4 +10,5 @@ public interface ModalidadService {
 	public Modalidad read( Long id );
 	public void delete( Long id );
 	public List<ModalidadDto> listartodos();
+	public List<Modalidad> listarxtipoingreso(Long idtipo);
 }

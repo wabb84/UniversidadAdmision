@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GrupoDto;
 import com.universidadadmision.produccion.entity.Grupo;
+import com.universidadadmision.produccion.entity.Periodo;
 
 @Repository
 public interface GrupoRepository extends JpaRepository<Grupo, Long> {
@@ -19,4 +20,6 @@ public interface GrupoRepository extends JpaRepository<Grupo, Long> {
 			+ "   inner join Admision.tipo_ingreso c on c.id =  a.tipo_ingreso_id order by a.id", nativeQuery = true )
 	
 	public List<GrupoDto> ListaGrupo();
+	
+	public List<Grupo> findByPeriodoidAndTipoingresoid(Long periodoid, Long tipoingresoid);
 }

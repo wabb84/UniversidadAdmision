@@ -18,4 +18,13 @@ public class PersonaServiceImpl implements PersonaService {
 		return personarep.findByTipodocumentoidAndNrodocumento(id,Numerodoc);
 	}
 
+	@Override
+	public Persona save(Persona persona) {
+		return personarep.save( persona );
+	}
+	
+	@Override
+	public Persona read(Long id) {
+		return personarep.findById(id).orElse(null);
+	}
 }

@@ -27,13 +27,13 @@ public class Vacantes extends Auditable<String> implements Serializable {
 	private Long id;
 	
 	@Column(name="periodo_id")
-	private Long periodo_id;
+	private Long periodoid;
 	
 	@Column(name="sede_id")
-	private Long sede_id;
+	private Long sedeid;
 
 	@Column(name="carrera_id")
-	private Long carrera_id;
+	private Long carreraid;
 	
 	@Column(name="vacantes")
 	private Long vacantes;

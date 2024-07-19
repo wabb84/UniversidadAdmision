@@ -36,4 +36,9 @@ public class GrupoServiceImpl implements GrupoService {
 	public List<GrupoDto> listartodos() {
 		return gruporep.ListaGrupo();
 	}
+	
+	@Override
+	public List<Grupo> listarxperiodo(Long periodoid, Long tipoingresoid){
+		return gruporep.findByPeriodoidAndTipoingresoid(periodoid,tipoingresoid);
+	};
 }

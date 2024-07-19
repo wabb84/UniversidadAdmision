@@ -9,4 +9,5 @@ public interface VacantesService {
 	public Vacantes read( Long id );
 	public void delete( Long id );
 	public List<VacantesDto> listartodos();
+	public Vacantes findByPeriodoidAndSedeidAndCarreraid(Long idperiodo, Long idsede, Long idcarrera);
 }

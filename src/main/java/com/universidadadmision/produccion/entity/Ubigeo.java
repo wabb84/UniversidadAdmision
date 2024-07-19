@@ -18,21 +18,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "modalidad", schema="Admision" )
-public class Modalidad extends Auditable<String> implements Serializable {
-	private static final long serialVersionUID = 1L;
+@Table(name = "ubigeo", schema="General")
+public class Ubigeo implements Serializable  {
+private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id", unique=true, nullable=false)
 	private Long id;
 	
-	@Column(name="nombre")
-	private String nombre;
+	@Column(name="ubigeo")
+	private String ubigeo;
 	
-	@Column(name="tipo_ingreso_id")
-	private Long tipoingresoid;
+	@Column(name="departamento")
+	private String departamento;
 	
-	@Column(name="estado_auditoria")
-	private boolean estado;
+	@Column(name="provincia")
+	private String provincia;
+	
+	@Column(name="distrito")
+	private String distrito;
+	
+	@Column(name="localidad")
+	private String localidad;
+	
 }

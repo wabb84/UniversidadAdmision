@@ -10,4 +10,5 @@ public interface GrupoService {
 	public Grupo read( Long id );
 	public void delete( Long id );
 	public List<GrupoDto> listartodos();
+	public List<Grupo> listarxperiodo(Long periodoid, Long tipoingresoid);
 }
