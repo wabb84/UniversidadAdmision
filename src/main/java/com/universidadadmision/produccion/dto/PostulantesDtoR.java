@@ -2,6 +2,7 @@ package com.universidadadmision.produccion.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Getter;
 
@@ -29,4 +30,6 @@ public class PostulantesDtoR implements Serializable {
 	private Long periodoid;
 	private Long sedeid;
 	private Long carreraid;
+	
+	private List<PostulanteRequisitoDtoR> requisitos;
 }

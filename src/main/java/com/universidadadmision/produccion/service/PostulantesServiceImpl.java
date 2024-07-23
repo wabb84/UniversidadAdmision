@@ -1,15 +1,18 @@
 package com.universidadadmision.produccion.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
+import com.universidadadmision.produccion.dto.PostulantesDtoR;
 import com.universidadadmision.produccion.entity.Postulantes;
+import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.repository.PostulantesRepository;
 
 import jakarta.transaction.Transactional;
@@ -21,11 +24,33 @@ public class PostulantesServiceImpl implements PostulantesService {
 	@Autowired
 	private PostulantesRepository postulantesrep;
 	
+	@Autowired
+	private VacantesService vacantesservice;
+	
+	
 	@Transactional
 	@Override
 	public Postulantes save(Postulantes postulantes) {
 		return postulantesrep.save( postulantes );
 	}
+	
+	@Transactional
+	@Override
+	public void registropostulantesrequisitos(PostulantesDtoR postulanteDtor, List<MultipartFile> archivos) throws IOException  {
+		
+		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(),postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		if (vacante == null){
+			//response.put("resultado", 0);
+			//response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+			//response.put("dato","");
+			
+			//return ResponseEntity.ok(response);
+			throw new IllegalArgumentException("No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+		}
+	}
+	
+	
+	
 
 	@Override
 	public Postulantes read(Long id) {

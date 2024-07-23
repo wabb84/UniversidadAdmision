@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
@@ -47,7 +50,7 @@ public class PostulanteController {
 	@PostMapping("/nuevo")
 	public ResponseEntity<?> NuevoGrupo(@RequestBody PostulantesDtoR postulanteDtor) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
-
+		
 		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
 		if (vacante == null){
 			response.put("resultado", 0);
@@ -123,6 +126,91 @@ public class PostulanteController {
 		response.put("resultado", 1);
 		response.put("mensaje", "Datos del Postulante grabados correctamente");
 		response.put("dato",postulantenew);
+		//response.put("dato","");
+		
+		return ResponseEntity.ok(response);			
+	}
+	
+	@PostMapping("/nuevoadjunto")
+	public ResponseEntity<?> NuevoGrupoadjunto(@RequestBody PostulantesDtoR postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws Exception  {
+		Map<String, Object> response = new HashMap<>();
+		
+		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		if (vacante == null){
+			response.put("resultado", 0);
+			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+			response.put("dato","");
+			
+			return ResponseEntity.ok(response);
+		}
+		
+		Persona persona = personaservice.findByDocumento(postulanteDtor.getTipodocumentoid(), postulanteDtor.getNumerodocumento());
+		Long idpersona = 0L; 
+		if (persona == null){
+			Persona personanew = new Persona();
+			personanew.setNombre(postulanteDtor.getNombre());
+			personanew.setApellido_paterno(postulanteDtor.getApellido_paterno());
+			personanew.setApellido_materno(postulanteDtor.getApellido_materno());
+			personanew.setTipodocumentoid(postulanteDtor.getTipodocumentoid());
+			personanew.setNrodocumento(postulanteDtor.getNumerodocumento());
+			personanew.setSexo(postulanteDtor.getSexo());
+			personanew.setEmail(postulanteDtor.getEmail());
+			personanew.setCelular(postulanteDtor.getCelular());
+			personanew.setTelefono(postulanteDtor.getTelefono());
+			personanew.setFecha_nacimiento(postulanteDtor.getFecha_nacimiento());
+			personanew.setDireccion(postulanteDtor.getDireccion());
+			personanew.setUbigeo_id(postulanteDtor.getUbigeo_id());
+			personanew.setEstado(true);
+			personanew.prePersist();
+			
+			try {
+				personaservice.save(personanew);
+				idpersona = personanew.getId();
+			} catch (Exception  e) {
+				  response.put("resultado", 0);
+				  response.put("mensaje", "Error al Grabar Datos del Postulante : " + e.getMessage());
+				  response.put("dato","");
+			      return ResponseEntity.ok(response);
+			} 
+		}
+		else {
+			idpersona = persona.getId();
+			List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
+			if (postulantebus != null){
+				response.put("resultado", 0);
+				response.put("mensaje", "Postulante ya Registrado");
+				response.put("dato","");
+			    return ResponseEntity.ok(response);
+			}
+		}
+				
+		Postulantes postulantenew = new Postulantes();
+		postulantenew.setPersonaid(idpersona);
+		postulantenew.setVacanteid(vacante.getId());
+		GeneralDto codpostulantedto = postulanteservice.generacodigo(postulanteDtor.getPeriodoid());
+		Periodo periodo = periodoservice.findByid(postulanteDtor.getPeriodoid());
+		String codpostulante = periodo.getAnio_semestre() + codpostulantedto.getCodigo();  
+		postulantenew.setCodigo(codpostulante);		
+		postulantenew.setGrupo_id(postulanteDtor.getGrupoid());
+		postulantenew.setModalidad_ingreso_id(postulanteDtor.getModalidadid());
+		postulantenew.setEstado_postulante("R");
+		postulantenew.setEstado(true);
+		postulantenew.prePersist();
+
+		try {
+			postulanteservice.save(postulantenew);
+		
+		} catch (Exception  e) {
+			  response.put("resultado", 0);
+			  response.put("mensaje", "Error al Grabar el Postulante : " + e.getMessage());
+			  response.put("dato","");
+		      return ResponseEntity.ok(response);
+		} 
+		
+		response.put("resultado", 1);
+		response.put("mensaje", "Datos del Postulante grabados correctamente");
+		response.put("dato",postulantenew);
+		//response.put("dato","");
 		
 		return ResponseEntity.ok(response);			
 	}
@@ -149,6 +237,10 @@ public class PostulanteController {
 		return ResponseEntity.ok(postulantesnotaso);
 	}
 	
+	
+	
+	
+	
 	@PostMapping("/postulantenotasi")
 	public ResponseEntity<?> ListaPostulanteNotasI(@RequestBody List<PostulanteNotasIDtoR> postulantesi) throws Exception {
 		Map<String, Object> response = new HashMap<>();
@@ -171,35 +263,51 @@ public class PostulanteController {
 	}
 
 	
-	/*@PostMapping("/edita")
+	@PostMapping("/edita")
 	public ResponseEntity<?> EditaPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
 		
-		Persona persona = personaservice.findByDocumento(postulanteDtor.getTipodocumentoid(), postulanteDtor.getNumerodocumento());
-		if (persona == null){
-			response.put("resultado", 0);
-			response.put("mensaje", "Tipo y Número de Documento ingresado No existe");
-			response.put("dato","");
-			
-			return ResponseEntity.ok(response);
-		}
-		
 		Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
-
 		if (postulanteedita == null){
 			response.put("resultado", 0);
-			response.put("mensaje", "No existe el Postulante");
+			response.put("mensaje", "Postulante Seleccionado no se encuentra registrado");
 			response.put("dato","");
 			
 			return ResponseEntity.ok(response);
 		}
 		
-		postulanteedita.setPersonaid(persona.getId());
-		//postulanteedita.setVacanteid(postulanteDtor.getVacanteid());
+		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		if (vacante == null){
+			response.put("resultado", 0);
+			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+			response.put("dato","");
+			
+			return ResponseEntity.ok(response);
+		}
+		
+		Persona personaedit = personaservice.read(postulanteedita.getPersonaid());
+		// Mejorar y verificar si se modifica tipo y numero de doc nuevo ya existe
+		if (personaedit != null) {
+			personaedit.setNombre(postulanteDtor.getNombre());
+			personaedit.setApellido_paterno(postulanteDtor.getApellido_paterno());
+			personaedit.setApellido_materno(postulanteDtor.getApellido_materno());
+			personaedit.setTipodocumentoid(postulanteDtor.getTipodocumentoid());
+			personaedit.setNrodocumento(postulanteDtor.getNumerodocumento());
+			personaedit.setSexo(postulanteDtor.getSexo());
+			personaedit.setEmail(postulanteDtor.getEmail());
+			personaedit.setCelular(postulanteDtor.getCelular());
+			personaedit.setTelefono(postulanteDtor.getTelefono());
+			personaedit.setFecha_nacimiento(postulanteDtor.getFecha_nacimiento());
+			personaedit.setDireccion(postulanteDtor.getDireccion());
+			personaedit.setUbigeo_id(postulanteDtor.getUbigeo_id());
+			personaedit.setEstado(postulanteDtor.isEstado());
+			personaedit.preUpdate();
+			personaservice.save(personaedit);
+		}
+		
+		postulanteedita.setVacanteid(vacante.getId());
 		postulanteedita.setGrupo_id(postulanteDtor.getGrupoid());
 		postulanteedita.setModalidad_ingreso_id(postulanteDtor.getModalidadid());
-		postulanteedita.setEstado_postulante(postulanteDtor.getEstadopostulante());
-		postulanteedita.setCodigo("0000000001");
 		postulanteedita.setEstado(postulanteDtor.isEstado());
 		postulanteedita.preUpdate();
 		
@@ -218,7 +326,7 @@ public class PostulanteController {
 		response.put("mensaje", "Datos de Postulante grabados correctamente");
 		response.put("dato",postulanteedita);
 		return ResponseEntity.ok(response);
-	}*/
+	}
 	
 	@PostMapping("/elimina")
     public ResponseEntity<?> EliminaPostulante(@RequestBody PostulantesDtoR postulanteDtor, BindingResult result) throws Exception{
