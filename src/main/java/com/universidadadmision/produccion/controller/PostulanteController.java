@@ -1,11 +1,11 @@
 package com.universidadadmision.produccion.controller;
 
+//import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,24 +13,31 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.dto.PostulantesDtoR;
+import com.universidadadmision.produccion.dto.PostulantesadjuntoDtoR;
 import com.universidadadmision.produccion.entity.Periodo;
 import com.universidadadmision.produccion.entity.Persona;
 import com.universidadadmision.produccion.entity.Postulantes;
+import com.universidadadmision.produccion.entity.PostulantesRequisitos;
 import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.service.PeriodoService;
 import com.universidadadmision.produccion.service.PersonaService;
+import com.universidadadmision.produccion.service.PostulanteRequisitosService;
 import com.universidadadmision.produccion.service.PostulantesService;
 import com.universidadadmision.produccion.service.VacantesService;
+import org.springframework.http.MediaType;
 
-@Controller
+@RestController
 @CrossOrigin
 @RequestMapping ("/postulantes")
 @Validated
@@ -46,9 +53,12 @@ public class PostulanteController {
 	
 	@Autowired
 	private PeriodoService periodoservice;
+	
+	@Autowired
+	private PostulanteRequisitosService postulanterequisitoservice;
 
 	@PostMapping("/nuevo")
-	public ResponseEntity<?> NuevoGrupo(@RequestBody PostulantesDtoR postulanteDtor) throws Exception  {
+	public ResponseEntity<?> NuevoPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
 		
 		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
@@ -115,6 +125,18 @@ public class PostulanteController {
 
 		try {
 			postulanteservice.save(postulantenew);
+			List<PostulanteRequisitoDtoR> postreq = postulanteDtor.getRequisitos();
+			
+			for (PostulanteRequisitoDtoR requisitoslista : postreq) {
+				PostulantesRequisitos postulanterequinew = new PostulantesRequisitos();
+				postulanterequinew.setPostulanteid(postulantenew.getId());
+				postulanterequinew.setRequisitomodalidadid(requisitoslista.getRequisitomodalidadid());
+				postulanterequinew.setUrl(requisitoslista.getUrl());
+				postulanterequinew.setRequisitovalidado(false);
+				postulanterequinew.setEstado(true);
+				postulanterequisitoservice.save(postulanterequinew);
+				//System.out.println(postulante.getCodigo());
+			}
 		
 		} catch (Exception  e) {
 			  response.put("resultado", 0);
@@ -131,11 +153,36 @@ public class PostulanteController {
 		return ResponseEntity.ok(response);			
 	}
 	
-	@PostMapping("/nuevoadjunto")
-	public ResponseEntity<?> NuevoGrupoadjunto(@RequestBody PostulantesDtoR postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws Exception  {
+	@PostMapping(value ="/nuevoadjunto",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<?> NuevoPostulanteadjunto(@RequestPart("postulanteadjunto") String postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
 		
-		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		ObjectMapper objectMapper = new ObjectMapper();
+		PostulantesadjuntoDtoR postulantesDtoR = objectMapper.readValue(postulanteDtor, PostulantesadjuntoDtoR.class);
+		
+		 try {
+			 postulanteservice.registropostulantesrequisitos(postulantesDtoR, archivos);
+			 
+			 //response.put("resultado", 1);
+			 //response.put("mensaje", "Datos del Postulante grabados correctamente");
+			 //response.put("dato",postulantenew);
+			 response.put("dato",archivos.size());
+			 //response.put("dato",postulantesDtoR);
+			//response.put("dato","");
+			 
+			 return ResponseEntity.ok(response);
+			 
+		 } catch (Exception e ) {
+			 
+			 response.put("resultado", 0);
+			 response.put("mensaje", e.getMessage());
+			 response.put("dato","");
+				
+			 return ResponseEntity.ok(response);
+	            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar los archivos");
+	     } 
+		
+		/*Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
 		if (vacante == null){
 			response.put("resultado", 0);
 			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
@@ -205,20 +252,29 @@ public class PostulanteController {
 			  response.put("mensaje", "Error al Grabar el Postulante : " + e.getMessage());
 			  response.put("dato","");
 		      return ResponseEntity.ok(response);
-		} 
+		}*/ 
 		
-		response.put("resultado", 1);
-		response.put("mensaje", "Datos del Postulante grabados correctamente");
-		response.put("dato",postulantenew);
+		//response.put("resultado", 1);
+		//response.put("mensaje", "Datos del Postulante grabados correctamente");
+		//response.put("dato",postulantenew);
 		//response.put("dato","");
 		
-		return ResponseEntity.ok(response);			
+		//return ResponseEntity.ok(response);			
 	}
 	
 	@PostMapping("/lista")
 	public ResponseEntity<?> ListaPostulante() throws Exception {
 		List<PostulantesDto> postulantelista = postulanteservice.listartodos();
 		return ResponseEntity.ok(postulantelista);
+	}
+	
+	@PostMapping("/requisitos")
+	public ResponseEntity<?> ListaPostulanteRequisitos(@RequestBody PostulanteNotasIDtoR postulante) throws Exception {
+		
+		
+		List<PostulanteRequisitoDto> postulanterequisitolista = postulanterequisitoservice.listapostulanterequisito(postulante.getId());
+
+		return ResponseEntity.ok(postulanterequisitolista);
 	}
 	
 	@PostMapping("/postulantenotaso")
@@ -236,10 +292,6 @@ public class PostulanteController {
 		List<PostulanteNotasDto> postulantesnotaso = postulanteservice.postulantenotaso(grupodtor.getPeriodo_id());
 		return ResponseEntity.ok(postulantesnotaso);
 	}
-	
-	
-	
-	
 	
 	@PostMapping("/postulantenotasi")
 	public ResponseEntity<?> ListaPostulanteNotasI(@RequestBody List<PostulanteNotasIDtoR> postulantesi) throws Exception {
@@ -327,6 +379,42 @@ public class PostulanteController {
 		response.put("dato",postulanteedita);
 		return ResponseEntity.ok(response);
 	}
+	
+	@PostMapping("/estadorequisito")
+	public ResponseEntity<?> EstadoRequisitoPostulante(@RequestBody PostulanteRequisitoDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		PostulantesRequisitos postulanterequisito = postulanterequisitoservice.read(postulanteDtor.getId());
+		postulanterequisito.setRequisitovalidado(postulanteDtor.isEstado());
+		
+		//System.out.println(postulanteDtor.isEstado());
+		
+		postulanterequisitoservice.save(postulanterequisito);
+
+		response.put("resultado", 1);
+		response.put("mensaje", "Requisito Actualizado correctamente");
+		response.put("dato",postulanterequisito);
+		
+		return ResponseEntity.ok(response);
+	}
+	
+	
+	@PostMapping("/editaestado")
+	public ResponseEntity<?> EditaPostulanteestado(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		
+		Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
+		postulanteedita.setEstado_postulante("P");
+		postulanteservice.save(postulanteedita);
+		response.put("resultado", 1);
+		response.put("mensaje", "Estado Postulante apto para rendir examen");
+		response.put("dato",postulanteedita);
+		
+		return ResponseEntity.ok(response);
+	}	
+	
+	
+	
+	
 	
 	@PostMapping("/elimina")
     public ResponseEntity<?> EliminaPostulante(@RequestBody PostulantesDtoR postulanteDtor, BindingResult result) throws Exception{

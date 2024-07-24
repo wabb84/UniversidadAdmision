@@ -10,11 +10,12 @@ import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.dto.PostulantesDtoR;
+import com.universidadadmision.produccion.dto.PostulantesadjuntoDtoR;
 import com.universidadadmision.produccion.entity.Postulantes;
 
 public interface PostulantesService {
 	public Postulantes save( Postulantes postulantes);
-	public void registropostulantesrequisitos(PostulantesDtoR postulantesDTOR, List<MultipartFile> archivos) throws IOException ;
+	public void registropostulantesrequisitos(PostulantesadjuntoDtoR postulantesDTOR, List<MultipartFile> archivos) throws IOException ;
 	public Postulantes read( Long id );
 	public void delete( Long id );
 	public List<PostulantesDto> listartodos();

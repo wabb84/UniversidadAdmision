@@ -29,19 +29,19 @@ public class PostulantesRequisitos extends Auditable<String> implements Serializ
 	@Column(name="id", unique=true, nullable=false)
 	private Long id;
 	
-	/*@Column(name="postulante_id")
+	@Column(name="postulante_id")
 	private Long postulanteid;
 	
 	@Column(name="requisito_modalidad_id")
-	private Long requisitomodalidadid;*/
+	private Long requisitomodalidadid;
 	
-	@ManyToOne
+	/*@ManyToOne
     @JoinColumn(name = "postulante_id")
     private Postulantes postulante;
     
     @ManyToOne
     @JoinColumn(name = "requisito_modalidad_id")
-    private RequisitosModalidad requisito;
+    private RequisitosModalidad requisito;*/
 	
 	@Column(name="url")
 	private String url;
