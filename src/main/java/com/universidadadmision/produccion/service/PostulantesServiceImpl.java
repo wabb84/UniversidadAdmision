@@ -1,29 +1,31 @@
 package com.universidadadmision.produccion.service;
 
 import java.io.IOException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.universidadadmision.produccion.dto.GeneralDto;
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
-import com.universidadadmision.produccion.dto.PostulantesDtoR;
 import com.universidadadmision.produccion.dto.PostulantesadjuntoDtoR;
 import com.universidadadmision.produccion.entity.Periodo;
 import com.universidadadmision.produccion.entity.Persona;
 import com.universidadadmision.produccion.entity.Postulantes;
 import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.repository.PostulantesRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +44,9 @@ public class PostulantesServiceImpl implements PostulantesService {
 	@Autowired
 	private PeriodoService periodoservice;
 	
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
+
 	@Transactional
 	@Override
 	public Postulantes save(Postulantes postulantes) {
@@ -108,13 +113,7 @@ public class PostulantesServiceImpl implements PostulantesService {
 		postulantenew.setEstado_postulante("R");
 		postulantenew.setEstado(true);
 		//postulantenew.prePersist();
-		
-		
-		
 	}
-	
-	
-	
 
 	@Override
 	public Postulantes read(Long id) {
@@ -160,4 +159,28 @@ public class PostulantesServiceImpl implements PostulantesService {
 		}
 		
 	};
+	
+	@Override
+	@Transactional
+	public MigraAcadDto executeMigraAcademico(Long grupoid) {
+		
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("paPostulanteMigracionAcad")
+                .withSchemaName("Admision") 
+                .declareParameters(
+                        new SqlParameter("pIdGrupo", Types.INTEGER),
+                        new SqlOutParameter("pResultado", Types.INTEGER),
+                        new SqlOutParameter("pMensaje", Types.VARCHAR)
+                );
+		
+		Map<String, Object> out = simpleJdbcCall.execute(
+				grupoid
+        );
+
+		MigraAcadDto resultado = new MigraAcadDto();
+		resultado.setCodigo((Integer) out.get("pResultado"));
+		resultado.setDescripcion((String) out.get("pMensaje"));
+
+        return resultado;
+	}
 }

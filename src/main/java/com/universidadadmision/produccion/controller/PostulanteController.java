@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
@@ -412,9 +413,25 @@ public class PostulanteController {
 		return ResponseEntity.ok(response);
 	}	
 	
-	
-	
-	
+	@PostMapping("/trasladoacademico")
+	public ResponseEntity<?> TrasladoAcademicoPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		
+		MigraAcadDto migraacad = postulanteservice.executeMigraAcademico(postulanteDtor.getId());
+		
+		if (migraacad.getCodigo() == 0) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al realizar el Traslado de Postulantes : " + migraacad.getDescripcion());
+			response.put("dato",migraacad);
+		}
+		else
+		{
+			response.put("resultado", 1);
+			response.put("mensaje", "Traslado de Postulantes Ejecutado con exito");
+			response.put("dato",migraacad);
+		}
+		return ResponseEntity.ok(response);
+	}	
 	
 	@PostMapping("/elimina")
     public ResponseEntity<?> EliminaPostulante(@RequestBody PostulantesDtoR postulanteDtor, BindingResult result) throws Exception{

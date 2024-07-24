@@ -1,17 +1,28 @@
 package com.universidadadmision.produccion.repository;
 
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GeneralDto;
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.entity.Postulantes;
 
+//import jakarta.persistence.StoredProcedureQuery;
+//import jakarta.persistence.EntityManager;
+//import jakarta.persistence.EntityManager;
+//import javax.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Repository
 public interface PostulantesRepository extends JpaRepository<Postulantes, Long>  {
+	
 	@Transactional(readOnly=true)
 	@Query(value = "select a.id, a.persona_id as personaid,c.abreviatura as tipodocumento, b.apellido_paterno +' '+ b.apellido_materno +' '+ b.nombre as nombrepostulante,b.nro_documento,\r\n"
 			+ "   a.vacante_id,a.codigo,a.grupo_id,d.nombre as nombregrupo,a.modalidad_ingreso_id,e.nombre as nombremodalidad,a.estado_postulante,a.estado_auditoria as estado,\r\n"
@@ -46,5 +57,21 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	
 	public List<PostulanteNotasDto> PostulanteNotasO(Long periodoid);
 	
+	
+    //@Procedure(procedureName = "Admision.paPostulanteMigracionAcad")
+	//void executeMigraAcademico(@Param("pIdGrupo") Long pIdGrupo, @Param("pResultado") Long pResultado, @Param("pMensaje") String pMensaje);
+    
+    /*public MigraAcadDto executeMigraAcademico(Long grupoid) {
+    
+    
+    	StoredProcedureQuery query = EntityManager.createStoredProcedureQuery("Admision.paPostulanteMigracionAcad");
+    
+    	return "";
+    	
+    }*/
+    
+    
+    
+    
 	
 }
