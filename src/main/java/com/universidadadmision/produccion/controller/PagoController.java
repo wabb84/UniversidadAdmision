@@ -32,7 +32,7 @@ public class PagoController {
         try {
             String tokenAcceso = pagoService.generarTokenAcceso();
             RespuestaTokenSesionDto respuestaTokenSesion = pagoService.generarTokenSesion(tokenAcceso, solicitudPago);
-
+            System.out.println(respuestaTokenSesion);
             response.put("resultado", 1);
             response.put("mensaje", "Token de sesión generado correctamente");
             response.put("dato", respuestaTokenSesion);

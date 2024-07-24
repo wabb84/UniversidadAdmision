@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class RespuestaTokenSesionDto {
-    private String claveSesion;
-    private long tiempoExpiracion;
+    private String sessionKey;
+    private long expirationTime;
 
 }

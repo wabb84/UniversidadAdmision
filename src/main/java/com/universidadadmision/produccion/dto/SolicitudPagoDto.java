@@ -5,25 +5,25 @@ import lombok.Getter;
 
 @Getter
 public class SolicitudPagoDto {
-    private String canal;
-    private double monto;
-    private Antifraude antifraude;
-    private DatosTarjeta datosTarjeta;
+    private String channel;
+    private double amount;
+    private Antifraude antifraud;
+    private DatosTarjeta dataMap;
 
     @Getter
     public static class Antifraude {
-        private String ipCliente;
-        private Map<String, String> datosDefinidosComerciante;
+        private String clientIp;
+        private Map<String, String> merchantDefineData;
 
     }
 
     @Getter
     public static class DatosTarjeta {
-        private String ciudadTitular;
-        private String paisTitular;
-        private String direccionTitular;
-        private String codigoPostalTitular;
-        private String estadoTitular;
-        private String telefonoTitular;
+        private String cardholderCity;
+        private String cardholderCountry;
+        private String cardholderAddress;
+        private String cardholderPostalCode;
+        private String cardholderState;
+        private String cardholderPhoneNumber;
     }
 }

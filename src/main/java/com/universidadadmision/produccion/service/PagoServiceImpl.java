@@ -37,7 +37,6 @@ public class PagoServiceImpl implements PagoService {
     @Override
     public String generarTokenAcceso() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
-        // String credencialesApi = username + ":" + password;
         String encodedAuth = Base64.getEncoder().encodeToString(credencialesApi.getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encodedAuth);
@@ -45,7 +44,7 @@ public class PagoServiceImpl implements PagoService {
         ResponseEntity<String> response = restTemplate.exchange(urlSeguridad, HttpMethod.GET, entity, String.class);
         if (response.getStatusCode() != HttpStatus.CREATED) {
             throw new Exception("Error al generar token de acceso");
-        }
+        } 
         return response.getBody();
     }
 
@@ -61,12 +60,10 @@ public class PagoServiceImpl implements PagoService {
         HttpEntity<SolicitudPagoDto> entity = new HttpEntity<>(solicitudPago, headers);
 
         ResponseEntity<RespuestaTokenSesionDto> response = restTemplate.exchange(
-                urlEcommerce + "/token/sesion/" + merchantId, HttpMethod.POST, entity, RespuestaTokenSesionDto.class);
-
+                urlEcommerce + "/token/session/" + merchantId, HttpMethod.POST, entity, RespuestaTokenSesionDto.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new Exception("Error al generar token de sesión");
-        }
-
+        } 
         return response.getBody();
     }
 
