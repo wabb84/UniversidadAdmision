@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
@@ -271,10 +272,7 @@ public class PostulanteController {
 	
 	@PostMapping("/requisitos")
 	public ResponseEntity<?> ListaPostulanteRequisitos(@RequestBody PostulanteNotasIDtoR postulante) throws Exception {
-		
-		
 		List<PostulanteRequisitoDto> postulanterequisitolista = postulanterequisitoservice.listapostulanterequisito(postulante.getId());
-
 		return ResponseEntity.ok(postulanterequisitolista);
 	}
 	
@@ -292,6 +290,23 @@ public class PostulanteController {
 		
 		List<PostulanteNotasDto> postulantesnotaso = postulanteservice.postulantenotaso(grupodtor.getPeriodo_id());
 		return ResponseEntity.ok(postulantesnotaso);
+	}
+	
+	@PostMapping("/postulantegrupo")
+	public ResponseEntity<?> ListaPostulanteGrupo(@RequestBody GrupoDtoR grupodtor) throws Exception {
+		//Map<String, Object> response = new HashMap<>();
+		
+		/*Periodo periodo = periodoservice.findByid(grupodtor.getPeriodo_id());
+		if (periodo == null){
+			response.put("resultado", 0);
+			response.put("mensaje", "Periodo Seleccionado no Existe");
+			response.put("dato","");
+			return ResponseEntity.ok(response);
+		}*/
+		
+		List<PostulanteGrupoDto> postulantesgrupo = postulanteservice.postulantegrupo(grupodtor.getId());
+				
+		return ResponseEntity.ok(postulantesgrupo);
 	}
 	
 	@PostMapping("/postulantenotasi")

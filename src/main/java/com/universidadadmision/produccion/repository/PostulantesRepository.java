@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.entity.Postulantes;
@@ -56,6 +57,19 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 			+ "   where c.id = :periodoid and a.estado_postulante = 'P'", nativeQuery = true )
 	
 	public List<PostulanteNotasDto> PostulanteNotasO(Long periodoid);
+	
+	@Transactional(readOnly=true)
+	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,\r\n"
+			+ "       d.cod_carrera as codcarrera,e.cod_sede as codsede, d.nombre as carrera, e.nombre as sede \r\n"
+			+ " from Admision.postulantes a\r\n"
+			+ "   inner join admision.vacantes b on b.id = a.vacante_id\r\n"
+			+ "   inner join general.periodo c on c.id = b.periodo_id\r\n"
+			+ "   inner join General.Carrera d on d.id = b.carrera_id\r\n"
+			+ "   inner join General.Sede e on e.id = b.sede_id\r\n"
+			+ "   inner join General.persona f on f.id = a.persona_id\r\n"
+			+ "   where a.grupo_id = :grupoid", nativeQuery = true )
+	
+	  public List<PostulanteGrupoDto> PostulantexGrupo(Long grupoid);
 	
 	
     //@Procedure(procedureName = "Admision.paPostulanteMigracionAcad")

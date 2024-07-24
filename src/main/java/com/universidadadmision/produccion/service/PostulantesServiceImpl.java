@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
@@ -144,6 +145,10 @@ public class PostulantesServiceImpl implements PostulantesService {
 	@Override
 	public List<PostulanteNotasDto> postulantenotaso(Long periodoid){
 		return postulantesrep.PostulanteNotasO(periodoid);
+	};
+	
+	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid){
+		return postulantesrep.PostulantexGrupo(grupoid);
 	};
 	
 	@Override
