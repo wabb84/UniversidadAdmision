@@ -155,6 +155,39 @@ public class PostulanteController {
 		return ResponseEntity.ok(response);			
 	}
 	
+	@PostMapping("/validapostulante")
+	public ResponseEntity<?> ValidaPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception  {
+		Map<String, Object> response = new HashMap<>();
+		
+		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		if (vacante == null){
+			response.put("resultado", 0);
+			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+			response.put("dato","");
+			
+			return ResponseEntity.ok(response);
+		}
+		
+		Long idpersona = 0L;
+		Persona persona = personaservice.findByDocumento(postulanteDtor.getTipodocumentoid(), postulanteDtor.getNumerodocumento());
+		if (persona != null){
+			idpersona = persona.getId();
+			List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
+			if (postulantebus != null){
+				response.put("resultado", 0);
+				response.put("mensaje", "Postulante ya Registrado");
+				response.put("dato",postulantebus);
+			    return ResponseEntity.ok(response);
+			}
+		}
+		
+		response.put("resultado", 1);
+		response.put("mensaje", "Postulante no registrado");
+		response.put("dato","");
+		return ResponseEntity.ok(response);			
+	}
+	
+	
 	@PostMapping(value ="/nuevoadjunto",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
 	public ResponseEntity<?> NuevoPostulanteadjunto(@RequestPart("postulanteadjunto") String postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
