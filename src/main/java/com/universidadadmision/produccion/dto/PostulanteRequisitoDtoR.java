@@ -8,6 +8,7 @@ public class PostulanteRequisitoDtoR  implements Serializable {
 	private static final long serialVersionUID = 5924468583005150707L;
 	
 	private Long id;
-	private Long requisito_id;
-
+	private Long requisitomodalidadid;
+	private String url;
+	private boolean estado; 
 }

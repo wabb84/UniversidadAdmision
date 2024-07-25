@@ -6,7 +6,9 @@ public interface PostulantesDto {
 	Long getId();
 	Long getPersonaid();
 	String getTipodocumento();
-	String getNombrepostulante();
+	String getApellido_paterno();
+	String getApellido_materno();
+	String getNombre();
 	String getnro_documento();
 	Long getVacante_id();
 	String getCodigo();
@@ -23,4 +25,6 @@ public interface PostulantesDto {
 	String getTelefono();
 	Long getUbigeo_id();
 	LocalDate getFecha_nacimiento();
+	String getCarrera();
+	String getSede();
 }
