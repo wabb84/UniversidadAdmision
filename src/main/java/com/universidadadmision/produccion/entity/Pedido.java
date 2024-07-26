@@ -30,4 +30,9 @@ private static final long serialVersionUID = 1L;
 	@Column(name="numeropedido")
 	private String numero;
 	
+	@Column(name="cat_tipo_documento_id")
+	private Long cattipodocumentoid;
+	
+	@Column(name="nro_documento")
+	private String nrodocumento;
 }

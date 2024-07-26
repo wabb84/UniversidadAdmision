@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.universidadadmision.produccion.dto.GeneralDto;
-
+import com.universidadadmision.produccion.dto.PedidoDtoR;
 import com.universidadadmision.produccion.entity.Pedido;
 import com.universidadadmision.produccion.service.PedidoService;
 
@@ -25,13 +26,14 @@ public class PedidoController {
 	private PedidoService pedidoservice;
 	
 	@PostMapping("/nuevo")
-	public ResponseEntity<?> NuevoPedido() throws Exception  {
+	public ResponseEntity<?> NuevoPedido(@RequestBody PedidoDtoR pedidodto) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
 		GeneralDto numeropedido = pedidoservice.generapedido();
 		
 		Pedido pedido = new Pedido();
 		pedido.setNumero(numeropedido.getNumeropedido());
-		
+		pedido.setCattipodocumentoid(pedidodto.getIddocumento());
+		pedido.setNrodocumento(pedidodto.getNrodocumento());
 		pedidoservice.save(pedido);
 		
 		response.put("numeropedido", pedido.getNumero());
