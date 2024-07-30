@@ -1,10 +1,12 @@
 package com.universidadadmision.produccion.dto;
 
+import java.io.Serializable;
 import java.util.Map;
 import lombok.Getter;
 
 @Getter
-public class SolicitudPagoDto {
+public class SolicitudPagoDto implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String channel;
     private double amount;
     private Antifraude antifraud;
@@ -14,7 +16,6 @@ public class SolicitudPagoDto {
     public static class Antifraude {
         private String clientIp;
         private Map<String, String> merchantDefineData;
-
     }
 
     @Getter

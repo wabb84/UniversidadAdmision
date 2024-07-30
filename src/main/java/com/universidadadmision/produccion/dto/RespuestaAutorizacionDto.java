@@ -1,10 +1,16 @@
 package com.universidadadmision.produccion.dto;
 
+import java.io.Serializable;
+
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public class RespuestaAutorizacionDto {
-    private String estado;
-    private String mensaje;
-    private String detalle;
+@Setter
+public class RespuestaAutorizacionDto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String tipoRespuesta;
+    private RespuestaAutorizacionExitoDto exito;
+    private RespuestaAutorizacionErrorDto error;
 }
