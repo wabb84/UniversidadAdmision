@@ -328,7 +328,6 @@ public class PostulanteController {
 	@PostMapping("/postulantegrupo")
 	public ResponseEntity<?> ListaPostulanteGrupo(@RequestBody GrupoDtoR grupodtor) throws Exception {
 		//Map<String, Object> response = new HashMap<>();
-		
 		/*Periodo periodo = periodoservice.findByid(grupodtor.getPeriodo_id());
 		if (periodo == null){
 			response.put("resultado", 0);
@@ -336,7 +335,6 @@ public class PostulanteController {
 			response.put("dato","");
 			return ResponseEntity.ok(response);
 		}*/
-		
 		List<PostulanteGrupoDto> postulantesgrupo = postulanteservice.postulantegrupo(grupodtor.getId());
 				
 		return ResponseEntity.ok(postulantesgrupo);
