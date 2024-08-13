@@ -1,12 +1,14 @@
 package com.universidadadmision.produccion.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,21 +20,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "pedido", schema="Admision" )
-public class Pedido implements Serializable  {
-private static final long serialVersionUID = 1L;
-	
+@Table(name = "pedido", schema = "Admision")
+public class Pedido implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id", unique=true, nullable=false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
-	
-	@Column(name="numeropedido")
+
+	@Column(name = "numeropedido")
 	private String numero;
-	
-	@Column(name="cat_tipo_documento_id")
+
+	@Column(name = "cat_tipo_documento_id")
 	private Long cattipodocumentoid;
-	
-	@Column(name="nro_documento")
+
+	@Column(name = "nro_documento")
 	private String nrodocumento;
+
+	@Column(name = "fecha_creacion", nullable = false, updatable = false)
+	private LocalDateTime fechaCreacion;
+
+	@PrePersist
+	protected void onCreate() {
+		fechaCreacion = LocalDateTime.now();
+	}
+
 }

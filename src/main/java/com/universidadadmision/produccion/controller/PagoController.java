@@ -75,6 +75,7 @@ public class PagoController {
         try {
             RespuestaAutorizacionDto respuesta = pagoService.autorizarTransaccion(solicitudAutorizacion);
             ObjectMapper objectMapper = new ObjectMapper();
+            //validar respuesta antes de redirigir
             String respuestaJson = objectMapper.writeValueAsString(respuesta);
             System.out.println("Respuesta del servicio: " + respuestaJson);
             String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
@@ -82,6 +83,7 @@ public class PagoController {
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
             return new RedirectView("http://localhost:3000/finalizacion-pago/error");
         }

@@ -62,15 +62,15 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public List<PostulanteNotasDto> PostulanteNotasO(Long periodoid);
 	
 	@Transactional(readOnly=true)
-	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,d.cod_carrera as codcarrera,\r\n"
-			+ "       e.cod_sede as codsede, d.nombre as carrera, e.nombre as sede, a.estado_postulante as estado, a.nota as nota\r\n"
+	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,d.id as codcarrera,\r\n"
+			+ "e.id as codsede, d.nombre as carrera, e.nombre as sede, a.estado_postulante as estado, a.nota as nota\r\n"
 			+ " from Admision.postulantes a\r\n"
 			+ "   inner join admision.vacantes b on b.id = a.vacante_id\r\n"
 			+ "   inner join general.periodo c on c.id = b.periodo_id\r\n"
 			+ "   inner join General.Carrera d on d.id = b.carrera_id\r\n"
 			+ "   inner join General.Sede e on e.id = b.sede_id\r\n"
 			+ "   inner join General.persona f on f.id = a.persona_id\r\n"
-			+ "   where a.grupo_id = :grupoid and a.estado_postulante in ('P','I')", nativeQuery = true )
+			+ "   where a.grupo_id = :grupoid and a.estado_postulante in ('P','I','A')", nativeQuery = true )
 	
 	  public List<PostulanteGrupoDto> PostulantexGrupo(Long grupoid);
 	
