@@ -4,8 +4,10 @@ import java.util.TimeZone;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
+@PropertySource("classpath:basedatos.properties")
 public class UniversidadadmisionApplication {
 
 	public static void main(String[] args) {
