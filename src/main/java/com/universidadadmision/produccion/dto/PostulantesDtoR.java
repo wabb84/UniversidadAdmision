@@ -31,5 +31,8 @@ public class PostulantesDtoR implements Serializable {
 	private Long sedeid;
 	private Long carreraid;
 	
+	private boolean discapacidad;
+	private String carnetconadis;
+	
 	private List<PostulanteRequisitoDtoR> requisitos;
 }

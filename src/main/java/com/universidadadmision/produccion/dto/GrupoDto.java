@@ -14,4 +14,6 @@ public interface GrupoDto {
 	LocalDate getFecha_inicio_evaluacion();
 	LocalDate getFecha_fin_evaluacion();
 	boolean getEstado();
+	Long getPuntajemaximo();
+	Long getPuntajeaprobatorio();
 }

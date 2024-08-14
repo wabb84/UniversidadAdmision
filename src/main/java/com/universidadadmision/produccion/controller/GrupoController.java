@@ -39,6 +39,8 @@ public class GrupoController {
 		gruponew.setFecha_fin(grupoDtor.getFecha_fin());
 		gruponew.setFecha_inicio_evaluacion(grupoDtor.getFecha_inicio_evaluacion());
 		gruponew.setFecha_fin_evaluacion(grupoDtor.getFecha_fin_evaluacion());
+		gruponew.setPuntajemaximo(grupoDtor.getPuntajemaximo());
+		gruponew.setPuntajeaprobatorio(grupoDtor.getPuntajeaprobatorio());
 		gruponew.setEstado(true);
 		gruponew.prePersist();
 		try {
@@ -78,6 +80,8 @@ public class GrupoController {
 		grupodedita.setFecha_fin(grupoDtor.getFecha_fin());
 		grupodedita.setFecha_inicio_evaluacion(grupoDtor.getFecha_inicio_evaluacion());
 		grupodedita.setFecha_fin_evaluacion(grupoDtor.getFecha_fin_evaluacion());
+		grupodedita.setPuntajemaximo(grupoDtor.getPuntajemaximo());
+		grupodedita.setPuntajeaprobatorio(grupoDtor.getPuntajeaprobatorio());
 		grupodedita.setEstado(grupoDtor.isEstado());
 		grupodedita.preUpdate();
 		try {

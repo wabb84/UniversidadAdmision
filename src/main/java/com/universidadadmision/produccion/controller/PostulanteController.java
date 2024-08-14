@@ -88,6 +88,8 @@ public class PostulanteController {
 			personanew.setFecha_nacimiento(postulanteDtor.getFecha_nacimiento());
 			personanew.setDireccion(postulanteDtor.getDireccion());
 			personanew.setUbigeo_id(postulanteDtor.getUbigeo_id());
+			personanew.setDiscapacidad(postulanteDtor.isDiscapacidad());
+			personanew.setCarnetconadis(postulanteDtor.getCarnetconadis());
 			personanew.setEstado(true);
 			personanew.prePersist();
 			
@@ -400,6 +402,8 @@ public class PostulanteController {
 			personaedit.setDireccion(postulanteDtor.getDireccion());
 			personaedit.setUbigeo_id(postulanteDtor.getUbigeo_id());
 			personaedit.setEstado(postulanteDtor.isEstado());
+			personaedit.setDiscapacidad(postulanteDtor.isDiscapacidad());
+			personaedit.setCarnetconadis(postulanteDtor.getCarnetconadis());
 			personaedit.preUpdate();
 			personaservice.save(personaedit);
 		}

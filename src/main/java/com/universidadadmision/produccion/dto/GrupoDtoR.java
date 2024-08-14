@@ -16,4 +16,7 @@ public class GrupoDtoR {
 	private LocalDate fecha_inicio_evaluacion;
 	private LocalDate fecha_fin_evaluacion;
 	private boolean estado;
+	private Long puntajemaximo;
+	private Long puntajeaprobatorio;
+	
 }

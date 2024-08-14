@@ -70,4 +70,10 @@ public class Persona  extends Auditable<String> implements Serializable {
 	@Column(name="estado_auditoria")
 	private boolean estado;
 	
+	@Column(name="discapacidad")
+	private boolean discapacidad;
+	
+	@Column(name="carnet_conadis")
+	private String carnetconadis;
+	
 }
