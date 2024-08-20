@@ -24,4 +24,20 @@ public interface PostulanteGrupoDto {
 	String getEstado();
 
 	String getNota();
+
+	String getTipodocumento();
+
+	String getNrodocumento();
+
+	String getEmail();
+
+	String getCelular();
+
+	String getTelefono();
+
+	String getDiscapacidad();
+
+	String getCarnetconadis();
+
+
 }
