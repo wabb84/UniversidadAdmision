@@ -19,4 +19,5 @@ public interface PostulantesRequisitosRepository extends JpaRepository<Postulant
 			+ " where a.postulante_id = :postulanteid \r\n", nativeQuery = true )
 	
 	public List<PostulanteRequisitoDto> PostulanteRequisito(Long postulanteid);
+	
 }

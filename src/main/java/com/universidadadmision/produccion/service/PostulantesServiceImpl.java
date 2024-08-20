@@ -54,7 +54,7 @@ public class PostulantesServiceImpl implements PostulantesService {
 		return postulantesrep.save( postulantes );
 	}
 	
-	@Transactional
+	/*@Transactional
 	@Override
 	public void registropostulantesrequisitos(PostulantesadjuntoDtoR postulanteadjuntoDtor, List<MultipartFile> archivos) throws IOException  {
 		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteadjuntoDtor.getPeriodoid(),postulanteadjuntoDtor.getSedeid(), postulanteadjuntoDtor.getCarreraid());
@@ -114,7 +114,7 @@ public class PostulantesServiceImpl implements PostulantesService {
 		postulantenew.setEstado_postulante("R");
 		postulantenew.setEstado(true);
 		//postulantenew.prePersist();
-	}
+	}*/
 
 	@Override
 	public Postulantes read(Long id) {
@@ -149,6 +149,10 @@ public class PostulantesServiceImpl implements PostulantesService {
 	
 	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid){
 		return postulantesrep.PostulantexGrupo(grupoid);
+	};
+	
+	public PostulantesDto PostulantePassword(Long id) {
+		return postulantesrep.PostulantePassword(id);
 	};
 	
 	@Override

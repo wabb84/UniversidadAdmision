@@ -10,5 +10,6 @@ public class PostulanteRequisitoDtoR  implements Serializable {
 	private Long id;
 	private Long requisitomodalidadid;
 	private String url;
-	private boolean estado; 
+	private String estado;
+	private String mensaje_rechazo;
 }

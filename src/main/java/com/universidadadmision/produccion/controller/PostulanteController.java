@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.universidadadmision.produccion.components.EmailService;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
@@ -31,12 +32,19 @@ import com.universidadadmision.produccion.entity.Periodo;
 import com.universidadadmision.produccion.entity.Persona;
 import com.universidadadmision.produccion.entity.Postulantes;
 import com.universidadadmision.produccion.entity.PostulantesRequisitos;
+import com.universidadadmision.produccion.entity.Requisitos;
+import com.universidadadmision.produccion.entity.RequisitosModalidad;
 import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.service.PeriodoService;
 import com.universidadadmision.produccion.service.PersonaService;
 import com.universidadadmision.produccion.service.PostulanteRequisitosService;
 import com.universidadadmision.produccion.service.PostulantesService;
+import com.universidadadmision.produccion.service.RequisitoModalidadService;
+import com.universidadadmision.produccion.service.RequisitosService;
 import com.universidadadmision.produccion.service.VacantesService;
+
+import jakarta.mail.MessagingException;
+
 import org.springframework.http.MediaType;
 
 @RestController
@@ -58,6 +66,16 @@ public class PostulanteController {
 	
 	@Autowired
 	private PostulanteRequisitosService postulanterequisitoservice;
+	
+	@Autowired
+	private RequisitoModalidadService requisitomodalidadservice;
+	
+	@Autowired
+	private RequisitosService requisitosservice;
+
+	
+	@Autowired
+    private EmailService emailService;
 
 	@PostMapping("/nuevo")
 	public ResponseEntity<?> NuevoPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception  {
@@ -105,8 +123,12 @@ public class PostulanteController {
 		}
 		else {
 			idpersona = persona.getId();
+			//System.out.println(idpersona);
+			//System.out.println(vacante.getId());
+			
 			List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
-			if (postulantebus != null){
+			//System.out.println(postulantebus);
+			if (!postulantebus.isEmpty()){
 				response.put("resultado", 0);
 				response.put("mensaje", "Postulante ya Registrado");
 				response.put("dato","");
@@ -136,7 +158,7 @@ public class PostulanteController {
 				postulanterequinew.setPostulanteid(postulantenew.getId());
 				postulanterequinew.setRequisitomodalidadid(requisitoslista.getRequisitomodalidadid());
 				postulanterequinew.setUrl(requisitoslista.getUrl());
-				postulanterequinew.setRequisitovalidado(false);
+				postulanterequinew.setRequisitovalidado("P"); // P = Pendiente, A = Aceptado, R = Rechazado
 				postulanterequinew.setEstado(true);
 				postulanterequisitoservice.save(postulanterequinew);
 				//System.out.println(postulante.getCodigo());
@@ -190,7 +212,7 @@ public class PostulanteController {
 	}
 	
 	
-	@PostMapping(value ="/nuevoadjunto",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
+	/*@PostMapping(value ="/nuevoadjunto",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
 	public ResponseEntity<?> NuevoPostulanteadjunto(@RequestPart("postulanteadjunto") String postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws Exception  {
 		Map<String, Object> response = new HashMap<>();
 		
@@ -219,7 +241,7 @@ public class PostulanteController {
 	            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar los archivos");
 	     } 
 		
-		/*Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
+		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
 		if (vacante == null){
 			response.put("resultado", 0);
 			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
@@ -289,7 +311,7 @@ public class PostulanteController {
 			  response.put("mensaje", "Error al Grabar el Postulante : " + e.getMessage());
 			  response.put("dato","");
 		      return ResponseEntity.ok(response);
-		}*/ 
+		} 
 		
 		//response.put("resultado", 1);
 		//response.put("mensaje", "Datos del Postulante grabados correctamente");
@@ -297,7 +319,7 @@ public class PostulanteController {
 		//response.put("dato","");
 		
 		//return ResponseEntity.ok(response);			
-	}
+	}*/
 	
 	@PostMapping("/lista")
 	public ResponseEntity<?> ListaPostulante() throws Exception {
@@ -434,13 +456,54 @@ public class PostulanteController {
 	@PostMapping("/estadorequisito")
 	public ResponseEntity<?> EstadoRequisitoPostulante(@RequestBody PostulanteRequisitoDtoR postulanteDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
-		PostulantesRequisitos postulanterequisito = postulanterequisitoservice.read(postulanteDtor.getId());
-		postulanterequisito.setRequisitovalidado(postulanteDtor.isEstado());
+		String to = "";
+		String subject = "";
+		String body = "";
 		
-		//System.out.println(postulanteDtor.isEstado());
+		PostulantesRequisitos postulanterequisito = postulanterequisitoservice.read(postulanteDtor.getId());
+		postulanterequisito.setRequisitovalidado(postulanteDtor.getEstado());
+		
+		if (postulanteDtor.getEstado().equals("R")) {
+			postulanterequisito.setMensaje_rechazo(postulanteDtor.getMensaje_rechazo());
+			//Enviar Correo con Mensaje de Rechazo del Reuisito
+		}
+		if (postulanteDtor.getEstado().equals("P")) {
+			postulanterequisito.setUrl(postulanteDtor.getUrl());
+		}
 		
 		postulanterequisitoservice.save(postulanterequisito);
+		
+		if (postulanteDtor.getEstado().equals("R")) {
+			
+			Postulantes postulante = postulanteservice.read(postulanterequisito.getPostulanteid());
+			Persona persona = personaservice.read(postulante.getPersonaid());
+			RequisitosModalidad reqmod = requisitomodalidadservice.read(postulanterequisito.getRequisitomodalidadid());
+			Requisitos requisito = requisitosservice.read(reqmod.getRequisitoid());
+			
+			to = persona.getEmail();
+			//to = "wabb84@hotmail.com";
+			subject = "Requisito Rechazado";
+			
+			body = "Estimado Postulante \n"
+			+ persona.getApellido_paterno() +" "+ persona.getApellido_materno() +" "+ persona.getNombre() + " identificado con \n"
+			+ " documento de identidad número " + persona.getNrodocumento() + " , se le informa que el requisito \n" + requisito.getDescripcion()
+			+ " ha sido rechazado por el siguiente motivo:  " + postulanteDtor.getMensaje_rechazo()
 
+			+" , debera subsanar dicha observacion \r\n"
+			+ " y reenviar en este mismo correo o de manera presencial en la Oficina de Amidision de la Universidad Politecnica del Peru."
+			+" Oficina de Admision Universidad Politecnica del Peru \n";
+			 
+			
+			try {
+	            emailService.sendHtmlEmail(to, subject, body);
+	            //return "Email HTML enviado con éxito!";
+	        } catch (MessagingException e) {
+	            //return "Error al enviar el correo: " + e.getMessage();
+	        }	
+		}
+		
+		
+		
 		response.put("resultado", 1);
 		response.put("mensaje", "Requisito Actualizado correctamente");
 		response.put("dato",postulanterequisito);
@@ -452,14 +515,42 @@ public class PostulanteController {
 	@PostMapping("/editaestado")
 	public ResponseEntity<?> EditaPostulanteestado(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
+		String to = "";
+		String subject = "";
+		String body = "";
 		
 		Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
 		postulanteedita.setEstado_postulante("P");
 		postulanteservice.save(postulanteedita);
 		response.put("resultado", 1);
 		response.put("mensaje", "Estado Postulante apto para rendir examen");
-		response.put("dato",postulanteedita);
 		
+		Persona persona = personaservice.read(postulanteedita.getPersonaid());
+		
+		to = persona.getEmail();
+		//to = "wabb84@hotmail.com";
+		subject = "Situación Postulante";
+		PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
+		
+		body = "Estimado Postulante \n"
+		+ persona.getApellido_paterno() +" "+ persona.getApellido_materno() +" "+ persona.getNombre() + " identificado con \n"
+		+ "documento de identidad número " + persona.getNrodocumento() + " , se le informa que usted ha quedado habilitado \n" 
+		+ "para rendir el examen de ingreso a la Universidad Politécnica del Peru, se adjunta informacion de ubicacion y acceso. \n"
+
+		+" Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
+		+" Código de Postulante : \n" + postulanteedita.getCodigo()
+		+" Password de Acceso : \n" + postpas.getPassword()
+		+" Oficina de Admision Universidad Politecnica del Peru \n";
+		 
+		
+		try {
+            emailService.sendHtmlEmail(to, subject, body);
+            //return "Email HTML enviado con éxito!";
+        } catch (MessagingException e) {
+            //return "Error al enviar el correo: " + e.getMessage();
+        }
+		
+		response.put("dato",postulanteedita);
 		return ResponseEntity.ok(response);
 	}	
 	

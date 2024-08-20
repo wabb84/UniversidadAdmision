@@ -27,4 +27,5 @@ public interface PostulantesDto {
 	LocalDate getFecha_nacimiento();
 	String getCarrera();
 	String getSede();
+	String getPassword();
 }

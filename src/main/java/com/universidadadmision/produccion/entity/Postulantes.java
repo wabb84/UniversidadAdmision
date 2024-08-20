@@ -50,4 +50,8 @@ public class Postulantes extends Auditable<String> implements Serializable {
 	
 	@Column(name="estado_auditoria")
 	private boolean estado;
+	
+	/*@Column(name="password")
+	private String password;*/
+
 }

@@ -47,8 +47,11 @@ public class PostulantesRequisitos extends Auditable<String> implements Serializ
 	private String url;
 	
 	@Column(name="requisito_validado")
-	private boolean requisitovalidado;	
+	private String requisitovalidado;	
 	
 	@Column(name="estado_auditoria")
 	private boolean estado;	
+
+	@Column(name="mensaje_rechazo")
+	private String mensaje_rechazo;	
 }

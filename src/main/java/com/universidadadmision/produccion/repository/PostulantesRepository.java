@@ -12,6 +12,7 @@ import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.entity.Postulantes;
 
@@ -75,7 +76,14 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	  public List<PostulanteGrupoDto> PostulantexGrupo(Long grupoid);
 	
 	
-    //@Procedure(procedureName = "Admision.paPostulanteMigracionAcad")
+	@Transactional(readOnly=true)
+	@Query(value = "SELECT CAST(DECRYPTBYPASSPHRASE('politecnica',password) AS CHAR(8)) as password \r\n"
+			+ "from Admision.Postulantes\r\n"
+			+ "WHERE id = :postulanteid \r\n", nativeQuery = true )
+	
+	public PostulantesDto PostulantePassword(Long postulanteid);
+	
+	//@Procedure(procedureName = "Admision.paPostulanteMigracionAcad")
 	//void executeMigraAcademico(@Param("pIdGrupo") Long pIdGrupo, @Param("pResultado") Long pResultado, @Param("pMensaje") String pMensaje);
     
     /*public MigraAcadDto executeMigraAcademico(Long grupoid) {

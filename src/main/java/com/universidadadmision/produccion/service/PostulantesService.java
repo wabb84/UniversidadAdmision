@@ -16,7 +16,7 @@ import com.universidadadmision.produccion.entity.Postulantes;
 
 public interface PostulantesService {
 	public Postulantes save( Postulantes postulantes);
-	public void registropostulantesrequisitos(PostulantesadjuntoDtoR postulantesDTOR, List<MultipartFile> archivos) throws IOException ;
+	//public void registropostulantesrequisitos(PostulantesadjuntoDtoR postulantesDTOR, List<MultipartFile> archivos) throws IOException ;
 	public Postulantes read( Long id );
 	public void delete( Long id );
 	public List<PostulantesDto> listartodos();
@@ -26,4 +26,5 @@ public interface PostulantesService {
 	public void postulantenotasi(List<PostulanteNotasIDtoR> postulantes);
 	public MigraAcadDto executeMigraAcademico(Long grupoid);
 	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid);
+	public PostulantesDto PostulantePassword(Long id);
 }
