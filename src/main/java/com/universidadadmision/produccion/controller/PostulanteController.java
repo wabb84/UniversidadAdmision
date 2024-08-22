@@ -541,7 +541,6 @@ public class PostulanteController {
 		+" Código de Postulante : \n" + postulanteedita.getCodigo()
 		+" Password de Acceso : \n" + postpas.getPassword()
 		+" Oficina de Admision Universidad Politecnica del Peru \n";
-		 
 		
 		try {
             emailService.sendHtmlEmail(to, subject, body);

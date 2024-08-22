@@ -20,8 +20,8 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true); // true indica que el contenido es HTML
-        helper.setFrom("comprobantes_uap2@uap.edu.pe");
-
+        //helper.setFrom("${MAILUSERNAME}");
+        helper.setFrom("envio_admision@politecnica.edu.pe");
         mailSender.send(message);
     }
 }
