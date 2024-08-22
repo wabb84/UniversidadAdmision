@@ -506,7 +506,7 @@ public class PostulanteController {
 
 			to = persona.getEmail();
 			// to = "wabb84@hotmail.com";
-			subject = "Requisito Rechazado";
+			subject = "Requisito Rechazado - Proceso de Admisión UPP";
 
 			// body = "Estimado Postulante \n"
 			// + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " +
@@ -581,38 +581,72 @@ public class PostulanteController {
 		response.put("resultado", 1);
 		response.put("mensaje", "Estado Postulante apto para rendir examen");
 
-//<<<<<<< HEAD
-		//		+" Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
-		//		+" Código de Postulante : \n" + postulanteedita.getCodigo()
-		//		+" Password de Acceso : \n" + postpas.getPassword()
-		//		+" Oficina de Admision Universidad Politecnica del Peru \n";
-		
-		//=======
+		// <<<<<<< HEAD
+		// +" Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
+		// +" Código de Postulante : \n" + postulanteedita.getCodigo()
+		// +" Password de Acceso : \n" + postpas.getPassword()
+		// +" Oficina de Admision Universidad Politecnica del Peru \n";
+
+		// =======
 		Persona persona = personaservice.read(postulanteedita.getPersonaid());
 
 		to = persona.getEmail();
 		// to = "wabb84@hotmail.com";
-		subject = "Situación de Postulante";
+		subject = "Situación de Postulante - Proceso de Admisión UPP";
 		PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
 
-		body = "Estimado Postulante \n"
-				+ persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " + persona.getNombre()
-				+ " identificado con \n"
-				+ "documento de identidad número " + persona.getNrodocumento()
-				+ " , se le informa que usted ha quedado habilitado \n"
-				+ "para rendir el examen de ingreso a la Universidad Politécnica del Peru, se adjunta informacion de ubicacion y acceso. \n"
+		// body = "Estimado Postulante \n"
+		// + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " +
+		// persona.getNombre()
+		// + " identificado con \n"
+		// + "documento de identidad número " + persona.getNrodocumento()
+		// + " , se le informa que usted ha quedado habilitado \n"
+		// + "para rendir el examen de ingreso a la Universidad Politécnica del Peru, se
+		// adjunta informacion de ubicacion y acceso. \n"
 
-				+ " Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
-				+ " Código de Postulante : \n" + postulanteedita.getCodigo()
-				+ " Password de Acceso : \n" + postpas.getPassword()
-				+ " Oficina de Admision Universidad Politecnica del Peru \n";
+		// + " Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
+		// + " Código de Postulante : \n" + postulanteedita.getCodigo()
+		// + " Password de Acceso : \n" + postpas.getPassword()
+		// + " Oficina de Admision Universidad Politecnica del Peru \n";
 
-///>>>>>>> 6e864b3383c65a44101f67548182891f02c6cfea
+		body = "<!DOCTYPE html>" +
+				"<html lang=\"es\">" +
+				"<head>" +
+				"<meta charset=\"UTF-8\">" +
+				"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+				"<title>Habilitación para Examen de Ingreso</title>" +
+				"</head>" +
+				"<body style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;\">"
+				+
+				"<div style=\"max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
+				+
+				"<div style=\"text-align: center; margin-bottom: 20px;\">" +
+				"<img src=\"https://uapvirtual.uap.edu.pe:8443/archivos/55031722350534804.png\" alt=\"Logo Universidad Politécnica del Perú\" style=\"max-width: 150px; height: auto;\">"
+				+
+				"</div>" +
+				"<h1 style=\"color: #4544a7; text-align: center;\">Habilitación para Examen de Ingreso</h1>" +
+				"<p>Estimado Postulante,</p>" +
+				"<p>" + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " + persona.getNombre()
+				+ ", identificado con documento de identidad número <strong>" + persona.getNrodocumento()
+				+ "</strong>,</p>" +
+				"<p>Se le informa que usted ha quedado habilitado para rendir el examen de ingreso a la Universidad Politécnica del Perú. Se adjunta información sobre la ubicación y acceso:</p>"
+				+
+				"<p><strong>Lugar del Examen:</strong> Calle Pedro Ruiz 251 - Pueblo Libre - Lima</p>" +
+				"<p><strong>Código de Postulante:</strong> " + postulanteedita.getCodigo() + "</p>" +
+				"<p><strong>Password de Acceso:</strong> " + postpas.getPassword() + "</p>" +
+				"<div style=\"text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;\">" +
+				"Oficina de Admisión<br>" +
+				"Universidad Politécnica del Perú" +
+				"</div>" +
+				"</div>" +
+				"</body>" +
+				"</html>";
+
 		try {
 			emailService.sendHtmlEmail(to, subject, body);
 			// return "Email HTML enviado con éxito!";
 		} catch (MessagingException e) {
-			 System.out.println(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 
 		response.put("dato", postulanteedita);
