@@ -13,24 +13,26 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.universidadadmision.produccion.dto.CargaNotasDtoR;
 import com.universidadadmision.produccion.dto.GrupoDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.GrupoDtoRxperiodo;
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.entity.Grupo;
 import com.universidadadmision.produccion.service.GrupoService;
 
 @Controller
 @CrossOrigin
-@RequestMapping ("/grupo")
+@RequestMapping("/grupo")
 @Validated
 public class GrupoController {
 	@Autowired
 	private GrupoService gruposervice;
-	
+
 	@PostMapping("/nuevo")
-	public ResponseEntity<?> NuevoGrupo(@RequestBody GrupoDtoR grupoDtor) throws Exception  {
+	public ResponseEntity<?> NuevoGrupo(@RequestBody GrupoDtoR grupoDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
-		
+
 		Grupo gruponew = new Grupo();
 		gruponew.setNombre(grupoDtor.getNombre());
 		gruponew.setPeriodoid(grupoDtor.getPeriodo_id());
@@ -45,34 +47,34 @@ public class GrupoController {
 		gruponew.prePersist();
 		try {
 			gruposervice.save(gruponew);
-		
-		} catch (Exception  e) {
-			  response.put("resultado", 0);
-			  response.put("mensaje", "Error al Grabar el Grupo : " + e.getMessage());
-			  response.put("dato","");
-		      return ResponseEntity.ok(response);
-		} 
-		
+
+		} catch (Exception e) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al Grabar el Grupo : " + e.getMessage());
+			response.put("dato", "");
+			return ResponseEntity.ok(response);
+		}
+
 		response.put("resultado", 1);
 		response.put("mensaje", "Datos de Grupo grabados correctamente");
-		response.put("dato",gruponew);
-		
-		return ResponseEntity.ok(response);			
+		response.put("dato", gruponew);
+
+		return ResponseEntity.ok(response);
 	}
-	
+
 	@PostMapping("/edita")
 	public ResponseEntity<?> EditaGrupo(@RequestBody GrupoDtoR grupoDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
 		Grupo grupodedita = gruposervice.read(grupoDtor.getId());
 
-		if (grupodedita == null){
+		if (grupodedita == null) {
 			response.put("resultado", 0);
 			response.put("mensaje", "No existe el Grupo");
-			response.put("dato","");
-			
+			response.put("dato", "");
+
 			return ResponseEntity.ok(response);
 		}
-		
+
 		grupodedita.setNombre(grupoDtor.getNombre());
 		grupodedita.setPeriodoid(grupoDtor.getPeriodo_id());
 		grupodedita.setTipoingresoid(grupoDtor.getTipo_ingreso_id());
@@ -85,60 +87,77 @@ public class GrupoController {
 		grupodedita.setEstado(grupoDtor.isEstado());
 		grupodedita.preUpdate();
 		try {
-			
+
 			gruposervice.save(grupodedita);
-	
-		} catch (Exception  e) {
-			  response.put("resultado", 0);
-			  response.put("mensaje", "Error al Grabar Grupo : " + e.getMessage());
-			  response.put("dato","");
-		      return ResponseEntity.ok(response);
-		} 
-		
+
+		} catch (Exception e) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al Grabar Grupo : " + e.getMessage());
+			response.put("dato", "");
+			return ResponseEntity.ok(response);
+		}
+
 		response.put("resultado", 1);
 		response.put("mensaje", "Datos de Grupo grabados correctamente");
-		response.put("dato",grupodedita);
+		response.put("dato", grupodedita);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@PostMapping("/lista")
 	public ResponseEntity<?> ListaGrupo() throws Exception {
 		List<GrupoDto> grupolista = gruposervice.listartodos();
 		return ResponseEntity.ok(grupolista);
 	}
-	
+
 	@PostMapping("/listaxperido")
 	public ResponseEntity<?> ListaGrupoxPeriodo(@RequestBody GrupoDtoRxperiodo grupoxperiodo) throws Exception {
-		List<Grupo> grupolistaxperiodo = gruposervice.listarxperiodo(grupoxperiodo.getIdperiodo(),grupoxperiodo.getIdtipo());
+		List<Grupo> grupolistaxperiodo = gruposervice.listarxperiodo(grupoxperiodo.getIdperiodo(),
+				grupoxperiodo.getIdtipo());
 		return ResponseEntity.ok(grupolistaxperiodo);
 	}
-	
+
 	@PostMapping("/elimina")
-    public ResponseEntity<?> EliminaGrupo(@RequestBody GrupoDtoR grupoDtor, BindingResult result) throws Exception{
+	public ResponseEntity<?> EliminaGrupo(@RequestBody GrupoDtoR grupoDtor, BindingResult result) throws Exception {
 		Map<String, Object> response = new HashMap<>();
-		
+
 		Grupo grupoelimina = gruposervice.read(grupoDtor.getId());
-		
-		if (grupoelimina == null){
+
+		if (grupoelimina == null) {
 			response.put("resultado", 0);
 			response.put("mensaje", "No existe el Grupo");
-			response.put("dato","");
-			
+			response.put("dato", "");
+
 			return ResponseEntity.ok(response);
 		}
-		
+
 		try {
 			gruposervice.delete(grupoDtor.getId());
 		} catch (Exception e) {
-			  response.put("resultado", 0);
-			  response.put("mensaje", "Error al Eliminar el Grupo : " + e.getMessage());
-			  response.put("dato","");
-		      return ResponseEntity.ok(response);
-		}    
-		
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al Eliminar el Grupo : " + e.getMessage());
+			response.put("dato", "");
+			return ResponseEntity.ok(response);
+		}
+
 		response.put("resultado", 1);
 		response.put("mensaje", "Grupo eliminado correctamente");
-		response.put("dato",grupoelimina);
+		response.put("dato", grupoelimina);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/cargarnotas")
+	public ResponseEntity<?> CargaNotasGrupo(@RequestBody CargaNotasDtoR carganotas) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		MigraAcadDto migraacad = gruposervice.executeCargarNotas(carganotas.getId());
+		if (migraacad.getCodigo() == 0) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al realizar el Traslado de Notas : " + migraacad.getDescripcion());
+			response.put("dato", migraacad);
+		} else {
+			response.put("resultado", 1);
+			response.put("mensaje", "Traslado de Notas Ejecutado con éxito");
+			response.put("dato", migraacad);
+		}
 		return ResponseEntity.ok(response);
 	}
 }

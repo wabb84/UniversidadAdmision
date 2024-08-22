@@ -35,9 +35,10 @@ public interface PostulanteGrupoDto {
 
 	String getTelefono();
 
-	String getDiscapacidad();
+	Boolean getDiscapacidad();
 
 	String getCarnetconadis();
 
+	String getEstadopuntaje();
 
 }

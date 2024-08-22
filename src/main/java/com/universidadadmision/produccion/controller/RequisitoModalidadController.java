@@ -85,7 +85,7 @@ public class RequisitoModalidadController {
 		} 
 		
 		response.put("resultado", 1);
-		response.put("mensaje", "Datos de Grupo grabados correctamente");
+		response.put("mensaje", "Datos de Requisito por Modalidad grabados correctamente");
 		response.put("dato",reqmodedit);
 		return ResponseEntity.ok(response);
 	}

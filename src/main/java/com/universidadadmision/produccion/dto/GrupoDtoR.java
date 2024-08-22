@@ -18,5 +18,6 @@ public class GrupoDtoR {
 	private boolean estado;
 	private Long puntajemaximo;
 	private Long puntajeaprobatorio;
-	
+	private boolean carganotas;
+
 }
