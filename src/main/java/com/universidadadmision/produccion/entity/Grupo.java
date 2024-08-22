@@ -56,4 +56,7 @@ public class Grupo extends Auditable<String> implements Serializable{
 
 	@Column(name="puntaje_aprobatorio")
 	private Long puntajeaprobatorio;
+
+	@Column(name="carga_notas")
+	private Boolean carganotas;
 }

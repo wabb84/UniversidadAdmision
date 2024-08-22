@@ -4,5 +4,5 @@ public interface PostulanteRequisitoDto {
 	Long getId();
 	String getDescripcion();
 	String getUrl();
-	boolean getRequisito_validado();
+	String getRequisito_validado();
 }
