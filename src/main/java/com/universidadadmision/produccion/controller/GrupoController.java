@@ -148,9 +148,7 @@ public class GrupoController {
 	@PostMapping("/cargarnotas")
 	public ResponseEntity<?> CargaNotasGrupo(@RequestBody CargaNotasDtoR carganotas) throws Exception {
 		Map<String, Object> response = new HashMap<>();
-
 		MigraAcadDto migraacad = gruposervice.executeCargarNotas(carganotas.getId());
-
 		if (migraacad.getCodigo() == 0) {
 			response.put("resultado", 0);
 			response.put("mensaje", "Error al realizar el Traslado de Notas : " + migraacad.getDescripcion());

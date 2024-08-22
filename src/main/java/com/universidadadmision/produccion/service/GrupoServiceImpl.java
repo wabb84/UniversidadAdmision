@@ -53,18 +53,18 @@ public class GrupoServiceImpl implements GrupoService {
 	}
 
 	@Override
-	public MigraAcadDto executeCargarNotas(Long grupoid) {
+	public MigraAcadDto executeCargarNotas(Long periodoid) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("paGrupoCargarNotas")
                 .withSchemaName("Admision") 
                 .declareParameters(
-                        new SqlParameter("pIdGrupo", Types.INTEGER),
+                        new SqlParameter("pIdPeriodo", Types.INTEGER),
                         new SqlOutParameter("pResultado", Types.INTEGER),
                         new SqlOutParameter("pMensaje", Types.VARCHAR)
                 );
 		
 		Map<String, Object> out = simpleJdbcCall.execute(
-				grupoid
+			periodoid
         );
 
 		MigraAcadDto resultado = new MigraAcadDto();
