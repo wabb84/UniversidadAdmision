@@ -77,14 +77,14 @@ public class PagoController {
             ObjectMapper objectMapper = new ObjectMapper();
             String respuestaJson = objectMapper.writeValueAsString(respuesta);
             System.out.println("Respuesta del servicio: " + respuestaJson);
-            String redirectUrl = "https://inscripcion.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
+            String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
 
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-            return new RedirectView("https://inscripcion.politecnica.edu.pe/finalizacion-pago/error");
+            return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
         }
     }
 
