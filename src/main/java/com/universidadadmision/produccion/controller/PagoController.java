@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.universidadadmision.produccion.service.PagoService;
+import com.universidadadmision.produccion.service.PostulantesService;
 import com.universidadadmision.produccion.service.TransaccionService;
 import com.universidadadmision.produccion.dto.SolicitudPagoDto;
+import com.universidadadmision.produccion.entity.Postulantes;
 import com.universidadadmision.produccion.entity.Transaccion;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.RespuestaAutorizacionDto;
 import com.universidadadmision.produccion.dto.RespuestaTokenSesionDto;
 import com.universidadadmision.produccion.dto.SolicitudAutorizacionDto;
@@ -31,6 +34,9 @@ public class PagoController {
 
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private PostulantesService postulantesService;
 
     @Autowired
     private TransaccionService transaccionService;
@@ -71,20 +77,32 @@ public class PagoController {
         solicitudAutorizacion.setChannel(channel);
         solicitudAutorizacion.setCaptureType("manual");
         solicitudAutorizacion.setCountable(true);
-
         try {
             RespuestaAutorizacionDto respuesta = pagoService.autorizarTransaccion(solicitudAutorizacion);
-            ObjectMapper objectMapper = new ObjectMapper();
-            String respuestaJson = objectMapper.writeValueAsString(respuesta);
-            System.out.println("Respuesta del servicio: " + respuestaJson);
-            String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
+            if (respuesta.getTipoRespuesta() == "exito") {
+                MigraAcadDto migraacad  = postulantesService.executeActivarPago(purchaseNumber);
+                System.out.println("respuesta sp actualizar estado pagado");
+                ObjectMapper objectMapper = new ObjectMapper();
+                String respuestaJson = objectMapper.writeValueAsString(migraacad);
+                System.out.println(respuestaJson);
 
+            } else {
+                //pantalla pago no autorizado
+                System.out.println("respuesta erronea de autorizacion de nuibiz");
+                //return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
+                return new RedirectView("http://localhost:3000/finalizacion-pago/error");
+
+            }
+            // validar estado pago
+            String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
+            //String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-            return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
+            //return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
+            return new RedirectView("http://localhost:3000/finalizacion-pago/error");
         }
     }
 

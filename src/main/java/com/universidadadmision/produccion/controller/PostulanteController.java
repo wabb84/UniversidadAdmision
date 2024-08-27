@@ -3,6 +3,7 @@ package com.universidadadmision.produccion.controller;
 //import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,8 @@ import com.universidadadmision.produccion.dto.PostulanteRequisitoDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
 import com.universidadadmision.produccion.dto.PostulantesDtoR;
 import com.universidadadmision.produccion.dto.PostulantesadjuntoDtoR;
+import com.universidadadmision.produccion.dto.ValidaPostulanteDto;
+import com.universidadadmision.produccion.dto.ValidaPostulanteDtoR;
 import com.universidadadmision.produccion.entity.Periodo;
 import com.universidadadmision.produccion.entity.Persona;
 import com.universidadadmision.produccion.entity.Postulantes;
@@ -82,7 +85,10 @@ public class PostulanteController {
 
 		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(),
 				postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
-		if (vacante == null) {
+
+		Vacantes segundaVacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(),
+				postulanteDtor.getSedeid(), postulanteDtor.getSegundacarreraid());
+		if (vacante == null || segundaVacante == null) {
 			response.put("resultado", 0);
 			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
 			response.put("dato", "");
@@ -123,11 +129,8 @@ public class PostulanteController {
 			}
 		} else {
 			idpersona = persona.getId();
-			// System.out.println(idpersona);
-			// System.out.println(vacante.getId());
 
 			List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
-			// System.out.println(postulantebus);
 			if (!postulantebus.isEmpty()) {
 				response.put("resultado", 0);
 				response.put("mensaje", "Postulante ya Registrado");
@@ -139,13 +142,17 @@ public class PostulanteController {
 		Postulantes postulantenew = new Postulantes();
 		postulantenew.setPersonaid(idpersona);
 		postulantenew.setVacanteid(vacante.getId());
+		// nueva vacante ID
+		postulantenew.setSegundavacanteid(segundaVacante.getId());
+
 		GeneralDto codpostulantedto = postulanteservice.generacodigo(postulanteDtor.getPeriodoid());
 		Periodo periodo = periodoservice.findByid(postulanteDtor.getPeriodoid());
 		String codpostulante = periodo.getAnio_semestre() + codpostulantedto.getCodigo();
 		postulantenew.setCodigo(codpostulante);
+
 		postulantenew.setGrupo_id(postulanteDtor.getGrupoid());
 		postulantenew.setModalidad_ingreso_id(postulanteDtor.getModalidadid());
-		postulantenew.setEstado_postulante("R");
+		postulantenew.setEstado_postulante("B");
 		postulantenew.setEstado(true);
 		postulantenew.prePersist();
 
@@ -183,161 +190,81 @@ public class PostulanteController {
 	public ResponseEntity<?> ValidaPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
 		Map<String, Object> response = new HashMap<>();
 
-		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.getPeriodoid(),
-				postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
-		if (vacante == null) {
+		ValidaPostulanteDtoR valida = postulanteservice.validarPostulante(postulanteDtor.getTipodocumentoid(),
+				postulanteDtor.getNumerodocumento(), postulanteDtor.getPeriodoid());
+		if (valida != null) {
 			response.put("resultado", 0);
-			response.put("mensaje", "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
+			response.put("mensaje", "Postulante ya registrado");
+			response.put("dato", valida);
+			return ResponseEntity.ok(response);
+		} else {
+			response.put("resultado", 1);
+			response.put("mensaje", "Postulante no registrado");
 			response.put("dato", "");
-
 			return ResponseEntity.ok(response);
 		}
-
-		Long idpersona = 0L;
-		Persona persona = personaservice.findByDocumento(postulanteDtor.getTipodocumentoid(),
-				postulanteDtor.getNumerodocumento());
-		if (persona != null) {
-			idpersona = persona.getId();
-			List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
-			if (postulantebus != null) {
-				response.put("resultado", 0);
-				response.put("mensaje", "Postulante ya Registrado");
-				response.put("dato", postulantebus);
-				return ResponseEntity.ok(response);
-			}
-		}
-
-		response.put("resultado", 1);
-		response.put("mensaje", "Postulante no registrado");
-		response.put("dato", "");
-		return ResponseEntity.ok(response);
 	}
 
-	/*
-	 * @PostMapping(value
-	 * ="/nuevoadjunto",consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
-	 * public ResponseEntity<?>
-	 * NuevoPostulanteadjunto(@RequestPart("postulanteadjunto") String
-	 * postulanteDtor, @RequestPart("archivos") List<MultipartFile> archivos) throws
-	 * Exception {
-	 * Map<String, Object> response = new HashMap<>();
-	 * 
-	 * ObjectMapper objectMapper = new ObjectMapper();
-	 * PostulantesadjuntoDtoR postulantesDtoR =
-	 * objectMapper.readValue(postulanteDtor, PostulantesadjuntoDtoR.class);
-	 * 
-	 * try {
-	 * postulanteservice.registropostulantesrequisitos(postulantesDtoR, archivos);
-	 * 
-	 * //response.put("resultado", 1);
-	 * //response.put("mensaje", "Datos del Postulante grabados correctamente");
-	 * //response.put("dato",postulantenew);
-	 * response.put("dato",archivos.size());
-	 * //response.put("dato",postulantesDtoR);
-	 * //response.put("dato","");
-	 * 
-	 * return ResponseEntity.ok(response);
-	 * 
-	 * } catch (Exception e ) {
-	 * 
-	 * response.put("resultado", 0);
-	 * response.put("mensaje", e.getMessage());
-	 * response.put("dato","");
-	 * 
-	 * return ResponseEntity.ok(response);
-	 * //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
-	 * body("Error al procesar los archivos");
-	 * }
-	 * 
-	 * Vacantes vacante =
-	 * vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteDtor.
-	 * getPeriodoid(), postulanteDtor.getSedeid(), postulanteDtor.getCarreraid());
-	 * if (vacante == null){
-	 * response.put("resultado", 0);
-	 * response.put("mensaje",
-	 * "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
-	 * response.put("dato","");
-	 * 
-	 * return ResponseEntity.ok(response);
-	 * }
-	 * 
-	 * Persona persona =
-	 * personaservice.findByDocumento(postulanteDtor.getTipodocumentoid(),
-	 * postulanteDtor.getNumerodocumento());
-	 * Long idpersona = 0L;
-	 * if (persona == null){
-	 * Persona personanew = new Persona();
-	 * personanew.setNombre(postulanteDtor.getNombre());
-	 * personanew.setApellido_paterno(postulanteDtor.getApellido_paterno());
-	 * personanew.setApellido_materno(postulanteDtor.getApellido_materno());
-	 * personanew.setTipodocumentoid(postulanteDtor.getTipodocumentoid());
-	 * personanew.setNrodocumento(postulanteDtor.getNumerodocumento());
-	 * personanew.setSexo(postulanteDtor.getSexo());
-	 * personanew.setEmail(postulanteDtor.getEmail());
-	 * personanew.setCelular(postulanteDtor.getCelular());
-	 * personanew.setTelefono(postulanteDtor.getTelefono());
-	 * personanew.setFecha_nacimiento(postulanteDtor.getFecha_nacimiento());
-	 * personanew.setDireccion(postulanteDtor.getDireccion());
-	 * personanew.setUbigeo_id(postulanteDtor.getUbigeo_id());
-	 * personanew.setEstado(true);
-	 * personanew.prePersist();
-	 * 
-	 * try {
-	 * personaservice.save(personanew);
-	 * idpersona = personanew.getId();
-	 * } catch (Exception e) {
-	 * response.put("resultado", 0);
-	 * response.put("mensaje", "Error al Grabar Datos del Postulante : " +
-	 * e.getMessage());
-	 * response.put("dato","");
-	 * return ResponseEntity.ok(response);
-	 * }
-	 * }
-	 * else {
-	 * idpersona = persona.getId();
-	 * List<Postulantes> postulantebus =
-	 * postulanteservice.findpostulantevacante(idpersona, vacante.getId());
-	 * if (postulantebus != null){
-	 * response.put("resultado", 0);
-	 * response.put("mensaje", "Postulante ya Registrado");
-	 * response.put("dato","");
-	 * return ResponseEntity.ok(response);
-	 * }
-	 * }
-	 * 
-	 * Postulantes postulantenew = new Postulantes();
-	 * postulantenew.setPersonaid(idpersona);
-	 * postulantenew.setVacanteid(vacante.getId());
-	 * GeneralDto codpostulantedto =
-	 * postulanteservice.generacodigo(postulanteDtor.getPeriodoid());
-	 * Periodo periodo = periodoservice.findByid(postulanteDtor.getPeriodoid());
-	 * String codpostulante = periodo.getAnio_semestre() +
-	 * codpostulantedto.getCodigo();
-	 * postulantenew.setCodigo(codpostulante);
-	 * postulantenew.setGrupo_id(postulanteDtor.getGrupoid());
-	 * postulantenew.setModalidad_ingreso_id(postulanteDtor.getModalidadid());
-	 * postulantenew.setEstado_postulante("R");
-	 * postulantenew.setEstado(true);
-	 * postulantenew.prePersist();
-	 * 
-	 * try {
-	 * postulanteservice.save(postulantenew);
-	 * 
-	 * } catch (Exception e) {
-	 * response.put("resultado", 0);
-	 * response.put("mensaje", "Error al Grabar el Postulante : " + e.getMessage());
-	 * response.put("dato","");
-	 * return ResponseEntity.ok(response);
-	 * }
-	 * 
-	 * //response.put("resultado", 1);
-	 * //response.put("mensaje", "Datos del Postulante grabados correctamente");
-	 * //response.put("dato",postulantenew);
-	 * //response.put("dato","");
-	 * 
-	 * //return ResponseEntity.ok(response);
-	 * }
-	 */
+	@PostMapping("/obtenerdatos")
+	public ResponseEntity<?> obtenerPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+
+		PostulantesDto postulante = postulanteservice.obtenerPostulante(postulanteDtor.getId());
+
+		if (postulante != null) {
+			List<PostulanteRequisitoDto> requisitos = postulanteservice
+					.obtenerRequisitoPostulante(postulanteDtor.getId());
+
+			PostulantesDtoR postulanteDtoR = new PostulantesDtoR();
+			postulanteDtoR.setId(postulante.getId());
+
+			postulanteDtoR.setTipodocumentoid(postulante.getIdtipodoc());
+			postulanteDtoR.setNumerodocumento(postulante.getnro_documento());
+			postulanteDtoR.setNombre(postulante.getNombre());
+			postulanteDtoR.setApellido_paterno(postulante.getApellido_paterno());
+			postulanteDtoR.setApellido_materno(postulante.getApellido_materno());
+			postulanteDtoR.setSexo(postulante.getSexo());
+			postulanteDtoR.setEmail(postulante.getEmail());
+			postulanteDtoR.setCelular(postulante.getCelular());
+			postulanteDtoR.setTelefono(postulante.getTelefono());
+			postulanteDtoR.setFecha_nacimiento(postulante.getFecha_nacimiento());
+			postulanteDtoR.setDireccion(postulante.getDireccion());
+			postulanteDtoR.setUbigeo_id(postulante.getUbigeo_id());
+			postulanteDtoR.setGrupoid(postulante.getGrupo_id());
+			postulanteDtoR.setModalidadid(postulante.getModalidad_ingreso_id());
+			postulanteDtoR.setEstadopostulante(postulante.getEstado_postulante());
+			//postulanteDtoR.setEstado(postulante.getEstado());
+			postulanteDtoR.setPeriodoid(postulante.getid_periodo());
+			postulanteDtoR.setSedeid(postulante.getid_sede());
+			postulanteDtoR.setCarreraid(postulante.getid_carrera());
+			postulanteDtoR.setSegundacarreraid(postulante.getsegunda_id_carrera());
+			postulanteDtoR.setDiscapacidad(postulante.getDiscapacidad());
+			postulanteDtoR.setCarnetconadis(postulante.getCarnetconadis());
+
+			List<PostulanteRequisitoDtoR> requisitosDtoR = new ArrayList<>();
+			for (PostulanteRequisitoDto requisito : requisitos) {
+				PostulanteRequisitoDtoR requisitoDtoR = new PostulanteRequisitoDtoR();
+				requisitoDtoR.setId(requisito.getId());
+				requisitoDtoR.setRequisitomodalidadid(requisito.getRequisitomodalidadid());
+				requisitoDtoR.setUrl(requisito.getUrl());
+				requisitosDtoR.add(requisitoDtoR);
+			}
+			postulanteDtoR.setRequisitos(requisitosDtoR);
+
+			// Preparar la respuesta
+			response.put("resultado", 1);
+			response.put("mensaje", "Postulante encontrado");
+			response.put("dato", postulanteDtoR);
+		} else {
+			// Preparar la respuesta cuando no se encuentra el postulante
+			response.put("resultado", 0);
+			response.put("mensaje", "Postulante no encontrado");
+			response.put("dato", "");
+		}
+
+		// Retornar la respuesta
+		return ResponseEntity.ok(response);
+	}
 
 	@PostMapping("/lista")
 	public ResponseEntity<?> ListaPostulante() throws Exception {
@@ -505,22 +432,8 @@ public class PostulanteController {
 			Requisitos requisito = requisitosservice.read(reqmod.getRequisitoid());
 
 			to = persona.getEmail();
-			// to = "wabb84@hotmail.com";
 			subject = "Requisito Rechazado - Proceso de Admisión UPP";
 
-			// body = "Estimado Postulante \n"
-			// + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " +
-			// persona.getNombre()
-			// + " identificado con \n"
-			// + " documento de identidad número " + persona.getNrodocumento()
-			// + " , se le informa que el requisito \n" + requisito.getDescripcion()
-			// + " ha sido rechazado por el siguiente motivo: " +
-			// postulanteDtor.getMensaje_rechazo()
-
-			// + " , debera subsanar dicha observacion \r\n"
-			// + " y reenviar en este mismo correo o de manera presencial en la Oficina de
-			// Amidision de la Universidad Politecnica del Peru."
-			// + " Oficina de Admision Universidad Politecnica del Peru \n";
 			body = "<!DOCTYPE html>" +
 					"<html lang=\"es\">" +
 					"<head>" +
@@ -581,33 +494,11 @@ public class PostulanteController {
 		response.put("resultado", 1);
 		response.put("mensaje", "Estado Postulante apto para rendir examen");
 
-		// <<<<<<< HEAD
-		// +" Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
-		// +" Código de Postulante : \n" + postulanteedita.getCodigo()
-		// +" Password de Acceso : \n" + postpas.getPassword()
-		// +" Oficina de Admision Universidad Politecnica del Peru \n";
-
-		// =======
 		Persona persona = personaservice.read(postulanteedita.getPersonaid());
 
 		to = persona.getEmail();
-		// to = "wabb84@hotmail.com";
 		subject = "Situación de Postulante - Proceso de Admisión UPP";
 		PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
-
-		// body = "Estimado Postulante \n"
-		// + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " +
-		// persona.getNombre()
-		// + " identificado con \n"
-		// + "documento de identidad número " + persona.getNrodocumento()
-		// + " , se le informa que usted ha quedado habilitado \n"
-		// + "para rendir el examen de ingreso a la Universidad Politécnica del Peru, se
-		// adjunta informacion de ubicacion y acceso. \n"
-
-		// + " Lugar del Examen : Calle Pedro Ruiz 251 - Pueblo Libre - Lima \n"
-		// + " Código de Postulante : \n" + postulanteedita.getCodigo()
-		// + " Password de Acceso : \n" + postpas.getPassword()
-		// + " Oficina de Admision Universidad Politecnica del Peru \n";
 
 		body = "<!DOCTYPE html>" +
 				"<html lang=\"es\">" +

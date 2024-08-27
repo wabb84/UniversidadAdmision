@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import lombok.Getter;
-
+import lombok.Setter;
+@Setter
 @Getter
 public class PostulantesDtoR implements Serializable {
 	private static final long serialVersionUID = 5924468583005150707L;
-	
+
 	private Long id;
 	private Long tipodocumentoid;
 	private String numerodocumento;
@@ -30,9 +31,9 @@ public class PostulantesDtoR implements Serializable {
 	private Long periodoid;
 	private Long sedeid;
 	private Long carreraid;
-	
+	private Long segundacarreraid;
 	private boolean discapacidad;
 	private String carnetconadis;
-	
+
 	private List<PostulanteRequisitoDtoR> requisitos;
 }

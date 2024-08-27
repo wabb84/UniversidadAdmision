@@ -21,29 +21,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "pedido", schema = "Admision")
-public class Pedido implements Serializable {
+public class Pedido extends Auditable<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	@Column(name = "numeropedido")
+	@Column(name = "numero_pedido")
 	private String numero;
 
-	@Column(name = "cat_tipo_documento_id")
-	private Long cattipodocumentoid;
-
-	@Column(name = "nro_documento")
-	private String nrodocumento;
-
-	@Column(name = "fecha_creacion", nullable = false, updatable = false)
-	private LocalDateTime fechaCreacion;
-
-	@PrePersist
-	protected void onCreate() {
-		fechaCreacion = LocalDateTime.now();
-	}
+	@Column(name="postulante_id")
+	private Long postulanteid;
 
 }

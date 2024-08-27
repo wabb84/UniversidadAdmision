@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GeneralDto;
-import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
+import com.universidadadmision.produccion.dto.PostulantesDtoR;
+import com.universidadadmision.produccion.dto.ValidaPostulanteDtoR;
 import com.universidadadmision.produccion.entity.Postulantes;
 
 //import jakarta.persistence.StoredProcedureQuery;
@@ -85,21 +86,37 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 
 	public PostulantesDto PostulantePassword(Long postulanteid);
 
-	// @Procedure(procedureName = "Admision.paPostulanteMigracionAcad")
-	// void executeMigraAcademico(@Param("pIdGrupo") Long pIdGrupo,
-	// @Param("pResultado") Long pResultado, @Param("pMensaje") String pMensaje);
+	@Transactional(readOnly = true)
+	@Query(value = "select a.codigo,b.numero_pedido as pedido,a.estado_postulante as estado \r\n"
+			+ "from Admision.Postulantes a\r\n"
+			+ "inner join Admision.Pedido b on a.id = b.postulante_id\r\n"
+			+ "where a.persona_id = (select id from General.Persona where cat_tipo_documento_id =:idtipodoc and nro_documento=:numeroDoc) \r\n"
+			+ "and vacante_id  in (select id from Admision.Vacantes where periodo_id = :periodoid)", nativeQuery = true)
 
-	/*
-	 * public MigraAcadDto executeMigraAcademico(Long grupoid) {
-	 * 
-	 * 
-	 * StoredProcedureQuery query =
-	 * EntityManager.createStoredProcedureQuery("Admision.paPostulanteMigracionAcad"
-	 * );
-	 * 
-	 * return "";
-	 * 
-	 * }
-	 */
+	public ValidaPostulanteDtoR validarPostulante(Long idtipodoc, String numeroDoc, Long periodoid);
 
+	@Transactional(readOnly = true)
+	@Query(value = "select b.cat_tipo_documento_id as idtipodoc, b.nro_documento as nro_documento, \r\n"
+			+ "b.apellido_paterno, b.apellido_materno, b.nombre, b.sexo, b.email, b.celular, b.telefono, \r\n"
+			+ "b.fecha_nacimiento, b.direccion, d.carrera_id as id_carrera, d.sede_id as id_sede, \r\n"
+			+ "d1.carrera_id as segunda_id_carrera, b.ubigeo_id, i.departamento, i.provincia, i.distrito, \r\n"
+			+ "b.discapacidad, b.carnet_conadis as carnetconadis, a.modalidad_ingreso_id as modalidad_ingreso_id, \r\n"
+			+ "d.periodo_id as id_periodo, g.id as grupo_id \r\n"
+			+ "from Admision.Postulantes a \r\n"
+			+ "inner join General.Persona b on a.persona_id = b.id \r\n"
+			+ "inner join General.Carrera c on c.id = b.cat_tipo_documento_id \r\n"
+			+ "inner join Admision.Vacantes d on d.id = a.vacante_id \r\n"
+			+ "inner join Admision.Vacantes d1 on d1.id = a.segunda_vacante_id \r\n"
+			+ "inner join Admision.Modalidad e on e.id = a.modalidad_ingreso_id \r\n"
+			+ "inner join Admision.Tipo_Ingreso f on f.id = e.tipo_ingreso_id \r\n"
+			+ "inner join Admision.Grupo g on g.periodo_id = d.periodo_id and g.tipo_ingreso_id = f.id \r\n"
+			+ "inner join General.Ubigeo i on i.id = b.ubigeo_id \r\n"
+			+ "where a.id = :postulanteId", nativeQuery = true)
+	public PostulantesDto findPostulanteByPostulanteId(Long postulanteId);
+
+	@Transactional(readOnly = true)
+	@Query(value = "select postulante_id as postulanteId, requisito_modalidad_id as requisitomodalidadid, url " +
+			"from Admision.Postulantes_Requisitos " +
+			"where postulante_id = :postulanteId", nativeQuery = true)
+	List<PostulanteRequisitoDto> findRequisitosByPostulanteId(Long postulanteId);
 }

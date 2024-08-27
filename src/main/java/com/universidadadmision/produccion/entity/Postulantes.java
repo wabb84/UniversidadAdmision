@@ -32,6 +32,9 @@ public class Postulantes extends Auditable<String> implements Serializable {
 	
 	@Column(name="vacante_id")
 	private Long vacanteid;
+
+	@Column(name="segunda_vacante_id")
+	private Long segundavacanteid;
 	
 	@Column(name="codigo")
 	private String codigo;

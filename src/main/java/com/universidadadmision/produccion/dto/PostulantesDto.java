@@ -1,5 +1,6 @@
 package com.universidadadmision.produccion.dto;
 
+import java.util.List;
 import java.time.LocalDate;
 
 public interface PostulantesDto {
@@ -53,6 +54,8 @@ public interface PostulantesDto {
 
 	Long getid_carrera();
 
+	Long getsegunda_id_carrera();
+
 	String getCarrera();
 
 	Long getid_sede();
@@ -70,4 +73,6 @@ public interface PostulantesDto {
 	Boolean getDiscapacidad();
 
 	String getCarnetconadis();
+
+	List<PostulanteRequisitoDtoR> getRequisitos();
 }

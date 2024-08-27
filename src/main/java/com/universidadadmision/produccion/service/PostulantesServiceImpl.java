@@ -1,31 +1,28 @@
 package com.universidadadmision.produccion.service;
 
-import java.io.IOException;
 import java.sql.Types;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
+import com.universidadadmision.produccion.dto.PostulanteRequisitoDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
-import com.universidadadmision.produccion.dto.PostulantesadjuntoDtoR;
-import com.universidadadmision.produccion.entity.Periodo;
-import com.universidadadmision.produccion.entity.Persona;
+import com.universidadadmision.produccion.dto.PostulantesDtoR;
+import com.universidadadmision.produccion.dto.ValidaPostulanteDto;
+import com.universidadadmision.produccion.dto.ValidaPostulanteDtoR;
 import com.universidadadmision.produccion.entity.Postulantes;
-import com.universidadadmision.produccion.entity.Vacantes;
 import com.universidadadmision.produccion.repository.PostulantesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,86 +32,15 @@ import lombok.RequiredArgsConstructor;
 public class PostulantesServiceImpl implements PostulantesService {
 	@Autowired
 	private PostulantesRepository postulantesrep;
-	
+
 	@Autowired
-	private VacantesService vacantesservice;
-	
-	@Autowired
-	private PersonaService personaservice;
-	
-	@Autowired
-	private PeriodoService periodoservice;
-	
-	@Autowired
-    private JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 
 	@Transactional
 	@Override
 	public Postulantes save(Postulantes postulantes) {
-		return postulantesrep.save( postulantes );
+		return postulantesrep.save(postulantes);
 	}
-	
-	/*@Transactional
-	@Override
-	public void registropostulantesrequisitos(PostulantesadjuntoDtoR postulanteadjuntoDtor, List<MultipartFile> archivos) throws IOException  {
-		Vacantes vacante = vacantesservice.findByPeriodoidAndSedeidAndCarreraid(postulanteadjuntoDtor.getPeriodoid(),postulanteadjuntoDtor.getSedeid(), postulanteadjuntoDtor.getCarreraid());
-		if (vacante == null){
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No Existe Vacantes Segun el Periodo, Sede y Carrera Seleccionado");
-		}
-		
-		Persona persona = personaservice.findByDocumento(postulanteadjuntoDtor.getTipodocumentoid(), postulanteadjuntoDtor.getNumerodocumento());
-		Long idpersona = 0L; 
-		if (persona == null){
-			
-			Persona personanew = new Persona();
-			personanew.setNombre(postulanteadjuntoDtor.getNombre());
-			personanew.setApellido_paterno(postulanteadjuntoDtor.getApellido_paterno());
-			personanew.setApellido_materno(postulanteadjuntoDtor.getApellido_materno());
-			personanew.setTipodocumentoid(postulanteadjuntoDtor.getTipodocumentoid());
-			personanew.setNrodocumento(postulanteadjuntoDtor.getNumerodocumento());
-			personanew.setSexo(postulanteadjuntoDtor.getSexo());
-			personanew.setEmail(postulanteadjuntoDtor.getEmail());
-			personanew.setCelular(postulanteadjuntoDtor.getCelular());
-			personanew.setTelefono(postulanteadjuntoDtor.getTelefono());
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			LocalDate fechanacimiento = LocalDate.parse(postulanteadjuntoDtor.getFecha_nacimiento(), formatter);
-			personanew.setFecha_nacimiento(fechanacimiento);
-			personanew.setDireccion(postulanteadjuntoDtor.getDireccion());
-			personanew.setUbigeo_id(postulanteadjuntoDtor.getUbigeo_id());
-			personanew.setEstado(true);
-			
-			//personanew.prePersist();
-			
-			try {
-				personaservice.save(personanew);
-				idpersona = personanew.getId();
-			} catch (Exception  e) {
-					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al Grabar Datos del Postulante : " + e.getMessage());
-			} 
-		}
-		else {
-			idpersona = persona.getId();
-			//List<Postulantes> postulantebus = postulanteservice.findpostulantevacante(idpersona, vacante.getId());
-			List<Postulantes> postulantebus = findpostulantevacante(idpersona, vacante.getId());
-			if (postulantebus != null){
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Postulante ya registrado");
-			}
-		}
-		
-		
-		Postulantes postulantenew = new Postulantes();
-		postulantenew.setPersonaid(idpersona);
-		postulantenew.setVacanteid(vacante.getId());
-		GeneralDto codpostulantedto = generacodigo(postulanteadjuntoDtor.getPeriodoid());
-		Periodo periodo = periodoservice.findByid(postulanteadjuntoDtor.getPeriodoid());
-		String codpostulante = periodo.getAnio_semestre() + codpostulantedto.getCodigo();  
-		postulantenew.setCodigo(codpostulante);		
-		postulantenew.setGrupo_id(postulanteadjuntoDtor.getGrupoid());
-		postulantenew.setModalidad_ingreso_id(postulanteadjuntoDtor.getModalidadid());
-		postulantenew.setEstado_postulante("R");
-		postulantenew.setEstado(true);
-		//postulantenew.prePersist();
-	}*/
 
 	@Override
 	public Postulantes read(Long id) {
@@ -130,66 +56,110 @@ public class PostulantesServiceImpl implements PostulantesService {
 	public List<PostulantesDto> listartodos() {
 		return postulantesrep.ListaGrupo();
 	}
-	
+
 	@Override
-	public List<Postulantes> findpostulantevacante(Long idpersona, Long idvacante){
-		return postulantesrep.findByPersonaidAndVacanteid(idpersona,idvacante);
+	public List<Postulantes> findpostulantevacante(Long idpersona, Long idvacante) {
+		return postulantesrep.findByPersonaidAndVacanteid(idpersona, idvacante);
 	};
-	
+
 	@Transactional
 	@Override
 	public GeneralDto generacodigo(Long periodoid) {
 		return postulantesrep.GeneraCodigoPostulante(periodoid);
 	}
-	
+
 	@Override
-	public List<PostulanteNotasDto> postulantenotaso(Long periodoid){
+	public List<PostulanteNotasDto> postulantenotaso(Long periodoid) {
 		return postulantesrep.PostulanteNotasO(periodoid);
 	};
-	
-	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid){
+
+	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid) {
 		return postulantesrep.PostulantexGrupo(grupoid);
 	};
-	
+
 	public PostulantesDto PostulantePassword(Long id) {
 		return postulantesrep.PostulantePassword(id);
 	};
-	
+
 	@Override
 	@Transactional
-	public void postulantenotasi(List<PostulanteNotasIDtoR> postulantes){
+	public void postulantenotasi(List<PostulanteNotasIDtoR> postulantes) {
 		for (PostulanteNotasIDtoR postulante : postulantes) {
 			Postulantes postulanteexis = postulantesrep.findById(postulante.getId()).orElse(null);
-			
+
 			postulanteexis.setNota(postulante.getNota());
 			postulanteexis.setEstado_postulante("I");
 			postulantesrep.save(postulanteexis);
-			//System.out.println(postulante.getCodigo());
+			// System.out.println(postulante.getCodigo());
 		}
-		
+
 	};
-	
+
 	@Override
 	@Transactional
 	public MigraAcadDto executeMigraAcademico(Long grupoid) {
-		
+
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("paPostulanteMigracionAcad")
-                .withSchemaName("Admision") 
-                .declareParameters(
-                        new SqlParameter("pIdGrupo", Types.INTEGER),
-                        new SqlOutParameter("pResultado", Types.INTEGER),
-                        new SqlOutParameter("pMensaje", Types.VARCHAR)
-                );
-		
+				.withProcedureName("paPostulanteMigracionAcad")
+				.withSchemaName("Admision")
+				.declareParameters(
+						new SqlParameter("pIdGrupo", Types.INTEGER),
+						new SqlOutParameter("pResultado", Types.INTEGER),
+						new SqlOutParameter("pMensaje", Types.VARCHAR));
+
 		Map<String, Object> out = simpleJdbcCall.execute(
-				grupoid
-        );
+				grupoid);
 
 		MigraAcadDto resultado = new MigraAcadDto();
 		resultado.setCodigo((Integer) out.get("pResultado"));
 		resultado.setDescripcion((String) out.get("pMensaje"));
 
-        return resultado;
+		return resultado;
 	}
+
+	@Override
+	public Postulantes actualizarPreRegistro(Long id, String nuevoEstado) {
+		Postulantes postulante = postulantesrep.findById(id)
+				.orElseThrow(() -> new RuntimeException("Postulante no encontrado"));
+
+		postulante.setEstado_postulante(nuevoEstado);
+
+		return postulantesrep.save(postulante);
+	}
+
+	@Override
+	public MigraAcadDto executeActivarPago(String numeroPedido) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("paActivarPagoPostulante")
+				.withSchemaName("Admision")
+				.declareParameters(
+						new SqlParameter("pNumeroPedido", Types.VARCHAR),
+						new SqlOutParameter("pResultado", Types.INTEGER),
+						new SqlOutParameter("pMensaje", Types.VARCHAR));
+
+		Map<String, Object> out = simpleJdbcCall.execute(
+				numeroPedido);
+
+		MigraAcadDto resultado = new MigraAcadDto();
+		resultado.setCodigo((Integer) out.get("pResultado"));
+		resultado.setDescripcion((String) out.get("pMensaje"));
+
+		return resultado;
+	}
+
+	@Override
+	public ValidaPostulanteDtoR validarPostulante(Long idtipodoc, String numeroDoc, Long periodoid) {
+		return postulantesrep.validarPostulante(idtipodoc, numeroDoc, periodoid);
+	}
+
+	@Override
+	public PostulantesDto obtenerPostulante(Long postulanteId) {
+		return postulantesrep.findPostulanteByPostulanteId(postulanteId);
+	}
+
+	@Override
+	public List<PostulanteRequisitoDto> obtenerRequisitoPostulante(Long postulanteId) {
+		return postulantesrep.findRequisitosByPostulanteId(postulanteId);
+	}
+
 }
