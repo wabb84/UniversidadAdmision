@@ -40,10 +40,4 @@ public class PedidoController {
 
 		return ResponseEntity.ok(response);
 	}
-
-	@GetMapping("/prueba")
-	public ResponseEntity<?> Prueba() throws Exception {
-		System.out.println("Entrando...");
-		return ResponseEntity.ok("response");
-	}
 }

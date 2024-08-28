@@ -9,13 +9,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.universidadadmision.produccion.dto.GrupoDtoRxperiodo;
 import com.universidadadmision.produccion.dto.ModalidadDto;
 import com.universidadadmision.produccion.dto.ModalidadDtoR;
+import com.universidadadmision.produccion.dto.ModalidadEvaluacionDto;
 import com.universidadadmision.produccion.entity.Modalidad;
 import com.universidadadmision.produccion.service.ModalidadService;
 
@@ -127,5 +130,11 @@ public class ModalidadController {
 		response.put("mensaje", "Modalidad eliminada correctamente");
 		response.put("dato",modalidadelimina);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/listar-evaluaciones")
+	public ResponseEntity<?> ListarEvaluaciones(@RequestParam("modalidadId") Long modalidadId) throws Exception {
+		List<ModalidadEvaluacionDto> modadlidadEvaluacion = modalidadservice.listarEvaluaciones(modalidadId);
+		return ResponseEntity.ok(modadlidadEvaluacion);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.universidadadmision.produccion.dto.ModalidadDto;
+import com.universidadadmision.produccion.dto.ModalidadEvaluacionDto;
 import com.universidadadmision.produccion.entity.Modalidad;
 import com.universidadadmision.produccion.repository.ModalidadRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 public class ModalidadServiceImpl implements ModalidadService {
 	@Autowired
 	private ModalidadRepository modalidadrep;
-	
+
 	@Override
 	public Modalidad save(Modalidad modalidad) {
-		return modalidadrep.save( modalidad );
+		return modalidadrep.save(modalidad);
 	}
 
 	@Override
@@ -35,8 +36,13 @@ public class ModalidadServiceImpl implements ModalidadService {
 	}
 
 	@Override
-	public List<Modalidad> listarxtipoingreso(Long idtipo){
+	public List<Modalidad> listarxtipoingreso(Long idtipo) {
 		return modalidadrep.findByTipoingresoid(idtipo);
+	}
+
+	@Override
+	public List<ModalidadEvaluacionDto> listarEvaluaciones(Long id) {
+		return modalidadrep.listarEvaluaciones(id);
 	};
-	
+
 }

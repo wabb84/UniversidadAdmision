@@ -48,7 +48,6 @@ import com.universidadadmision.produccion.service.VacantesService;
 
 import jakarta.mail.MessagingException;
 
-import org.springframework.http.MediaType;
 
 @RestController
 @CrossOrigin
@@ -233,13 +232,16 @@ public class PostulanteController {
 			postulanteDtoR.setGrupoid(postulante.getGrupo_id());
 			postulanteDtoR.setModalidadid(postulante.getModalidad_ingreso_id());
 			postulanteDtoR.setEstadopostulante(postulante.getEstado_postulante());
-			//postulanteDtoR.setEstado(postulante.getEstado());
+			// postulanteDtoR.setEstado(postulante.getEstado());
 			postulanteDtoR.setPeriodoid(postulante.getid_periodo());
 			postulanteDtoR.setSedeid(postulante.getid_sede());
 			postulanteDtoR.setCarreraid(postulante.getid_carrera());
 			postulanteDtoR.setSegundacarreraid(postulante.getsegunda_id_carrera());
 			postulanteDtoR.setDiscapacidad(postulante.getDiscapacidad());
 			postulanteDtoR.setCarnetconadis(postulante.getCarnetconadis());
+			postulanteDtoR.setDepartamento(postulante.getDepartamento());
+			postulanteDtoR.setProvincia(postulante.getProvincia());
+			postulanteDtoR.setDistrito(postulante.getDistrito());
 
 			List<PostulanteRequisitoDtoR> requisitosDtoR = new ArrayList<>();
 			for (PostulanteRequisitoDto requisito : requisitos) {

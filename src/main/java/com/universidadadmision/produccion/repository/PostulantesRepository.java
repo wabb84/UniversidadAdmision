@@ -87,16 +87,15 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public PostulantesDto PostulantePassword(Long postulanteid);
 
 	@Transactional(readOnly = true)
-	@Query(value = "select a.codigo,b.numero_pedido as pedido,a.estado_postulante as estado \r\n"
+	@Query(value = "select a.id, a.codigo,1 as pedido,a.estado_postulante as estado \r\n"
 			+ "from Admision.Postulantes a\r\n"
-			+ "inner join Admision.Pedido b on a.id = b.postulante_id\r\n"
 			+ "where a.persona_id = (select id from General.Persona where cat_tipo_documento_id =:idtipodoc and nro_documento=:numeroDoc) \r\n"
 			+ "and vacante_id  in (select id from Admision.Vacantes where periodo_id = :periodoid)", nativeQuery = true)
 
 	public ValidaPostulanteDtoR validarPostulante(Long idtipodoc, String numeroDoc, Long periodoid);
 
 	@Transactional(readOnly = true)
-	@Query(value = "select b.cat_tipo_documento_id as idtipodoc, b.nro_documento as nro_documento, \r\n"
+	@Query(value = "select a.id, 	b.cat_tipo_documento_id as idtipodoc, b.nro_documento as nro_documento, \r\n"
 			+ "b.apellido_paterno, b.apellido_materno, b.nombre, b.sexo, b.email, b.celular, b.telefono, \r\n"
 			+ "b.fecha_nacimiento, b.direccion, d.carrera_id as id_carrera, d.sede_id as id_sede, \r\n"
 			+ "d1.carrera_id as segunda_id_carrera, b.ubigeo_id, i.departamento, i.provincia, i.distrito, \r\n"

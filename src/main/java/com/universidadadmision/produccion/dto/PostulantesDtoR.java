@@ -6,6 +6,7 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+
 @Setter
 @Getter
 public class PostulantesDtoR implements Serializable {
@@ -34,6 +35,10 @@ public class PostulantesDtoR implements Serializable {
 	private Long segundacarreraid;
 	private boolean discapacidad;
 	private String carnetconadis;
+
+	private String departamento;
+	private String provincia;
+	private String distrito;
 
 	private List<PostulanteRequisitoDtoR> requisitos;
 }
