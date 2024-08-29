@@ -79,30 +79,29 @@ public class PagoController {
         solicitudAutorizacion.setCountable(true);
         try {
             RespuestaAutorizacionDto respuesta = pagoService.autorizarTransaccion(solicitudAutorizacion);
+            ObjectMapper objectMapper = new ObjectMapper();
+                String respuestaJsons = objectMapper.writeValueAsString(respuesta);
+                System.out.println(respuestaJsons);
             if (respuesta.getTipoRespuesta() == "exito") {
                 MigraAcadDto migraacad  = postulantesService.executeActivarPago(purchaseNumber);
                 System.out.println("respuesta sp actualizar estado pagado");
-                ObjectMapper objectMapper = new ObjectMapper();
-                String respuestaJson = objectMapper.writeValueAsString(migraacad);
-                System.out.println(respuestaJson);
 
             } else {
-                //pantalla pago no autorizado
                 System.out.println("respuesta erronea de autorizacion de nuibiz");
-                //return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
-                return new RedirectView("http://localhost:3000/finalizacion-pago/error");
-
+                return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
+                //return new RedirectView("http://localhost:3000/finalizacion-pago/error");
             }
             // validar estado pago
-            String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
-            //String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
+            //String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
+            String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
+            System.out.println("hasssss");
             System.out.println(e.getMessage());
             e.printStackTrace();
-            //return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
-            return new RedirectView("http://localhost:3000/finalizacion-pago/error");
+            return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
+            //return new RedirectView("http://localhost:3000/finalizacion-pago/error");
         }
     }
 

@@ -52,4 +52,6 @@ public interface PostulantesService {
 	public PostulantesDto obtenerPostulante(Long postulanteId);
 
 	public List<PostulanteRequisitoDto> obtenerRequisitoPostulante(Long postulanteId);
+
+	public MigraAcadDto executeActualizarEstado(Long postulanteId);
 }

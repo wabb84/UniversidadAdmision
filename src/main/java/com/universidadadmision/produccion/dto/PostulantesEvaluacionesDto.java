@@ -8,4 +8,8 @@ public interface PostulantesEvaluacionesDto {
     String getnombreEvaluacion();
 
     Long getNotaTotal();
+
+    Long getPorcentaje();
+
+    Boolean getes_externo();
 }

@@ -162,4 +162,24 @@ public class PostulantesServiceImpl implements PostulantesService {
 		return postulantesrep.findRequisitosByPostulanteId(postulanteId);
 	}
 
+	@Override
+	@Transactional
+	public MigraAcadDto executeActualizarEstado(Long postulanteId) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("paActualizarEstadoYCrearEvaluacion")
+				.withSchemaName("Admision")
+				.declareParameters(
+						new SqlParameter("postulanteId", Types.INTEGER),
+						new SqlOutParameter("pResultado", Types.INTEGER),
+						new SqlOutParameter("pMensaje", Types.VARCHAR));
+
+		Map<String, Object> out = simpleJdbcCall.execute(postulanteId);
+
+		MigraAcadDto resultado = new MigraAcadDto();
+		resultado.setCodigo((Integer) out.get("pResultado"));
+		resultado.setDescripcion((String) out.get("pMensaje"));
+
+		return resultado;
+	}
+
 }

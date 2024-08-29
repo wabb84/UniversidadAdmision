@@ -14,10 +14,11 @@ import com.universidadadmision.produccion.entity.PostulantesEvaluacionCriterio;
 @Repository
 public interface PostulantesEvaluacionCriterioRepository extends JpaRepository<PostulantesEvaluacionCriterio, Long> {
     @Transactional(readOnly = true)
-    @Query(value = "SELECT a.id,a.criterio_evaluacion_id,b.nombre as nombre_criterio_evaluacion,nota_criterio, b.puntaje\r\n"
+    @Query(value = "SELECT a.id,a.criterio_evaluacion_id,b.nombre as nombre_criterio_evaluacion,nota_criterio, b.puntaje,c.es_externo \r\n"
             +
             "FROM Admision.Postulantes_Evaluacion_Criterio A\r\n" +
-            "INNER JOIN Admision.Criterio_Evaluacion b on a.criterio_evaluacion_id = b.id WHERE a.postulante_evaluacion_id = :postulanteEvaluacionId", nativeQuery = true)
+            "INNER JOIN Admision.Criterio_Evaluacion b on a.criterio_evaluacion_id = b.id\r\n" +
+            "INNER JOIN Admision.Evaluacion c on a.evaluacion_id = c.id WHERE a.postulante_evaluacion_id = :postulanteEvaluacionId", nativeQuery = true)
     List<PostulantesEvaluacionesCriterioDto> findByPostulanteEvaluacionId(Long postulanteEvaluacionId) throws Exception;
 
     @Modifying

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionesCriterioDto;
 import com.universidadadmision.produccion.entity.PostulantesEvaluacionCriterio;
 
@@ -18,5 +19,5 @@ public interface PostulantesEvaluacionCriterioService {
 
     List<PostulantesEvaluacionesCriterioDto> findByPostulanteEvaluacionId(Long postulanteEvaluacionId) throws Exception;
 
-    int updateNotaCriterio(Long id, Long notaCriterio);
+    MigraAcadDto executeActualizarNota(Long id, Long nota);
 }

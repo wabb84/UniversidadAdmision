@@ -10,4 +10,6 @@ public interface PostulantesEvaluacionesCriterioDto {
     Long getnota_criterio();
 
     Long getPuntaje();
+
+    Boolean getes_externo();
 }

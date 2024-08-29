@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.universidadadmision.produccion.dto.MigraAcadDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionesCriterioDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionesDto;
@@ -71,25 +72,24 @@ public class PostulanteEvaluacionController {
         }
     }
 
-    @PutMapping("/actualizar-detalle/{id}/{monto}")
+    @PutMapping("/actualizar-detalle/{id}/{nota}")
     public ResponseEntity<?> updateNotaCriterio(
         @PathVariable Long id,
-        @PathVariable Long monto) {
+        @PathVariable Long nota) {
 
-        Map<String, Object> response = new HashMap<>();
+       Map<String, Object> response = new HashMap<>();
 
-        int updatedRows = postulantesEvaluacionCriterioService.updateNotaCriterio(id, monto);
+		MigraAcadDto migraacad = postulantesEvaluacionCriterioService.executeActualizarNota(id, nota);
 
-        if (updatedRows > 0) {
-            response.put("resultado", 1);
-            response.put("mensaje", "Actualización de nota exitosa.");
-            response.put("dato", "");
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("resultado", 0);
-            response.put("mensaje", "Error en la actualización de nota.");
-            response.put("dato", "");
-            return ResponseEntity.ok(response);
-        }
+		if (migraacad.getCodigo() == 0) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al actualizar nota de postulante : " + migraacad.getDescripcion());
+			response.put("dato", migraacad);
+		} else {
+			response.put("resultado", 1);
+			response.put("mensaje", "Actualización de nota exitosa.");
+			response.put("dato", migraacad);
+		}
+		return ResponseEntity.ok(response);
     }
 }

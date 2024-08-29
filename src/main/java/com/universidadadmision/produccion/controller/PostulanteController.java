@@ -258,13 +258,11 @@ public class PostulanteController {
 			response.put("mensaje", "Postulante encontrado");
 			response.put("dato", postulanteDtoR);
 		} else {
-			// Preparar la respuesta cuando no se encuentra el postulante
 			response.put("resultado", 0);
 			response.put("mensaje", "Postulante no encontrado");
 			response.put("dato", "");
 		}
 
-		// Retornar la respuesta
 		return ResponseEntity.ok(response);
 	}
 
@@ -312,29 +310,6 @@ public class PostulanteController {
 		List<PostulanteGrupoDto> postulantesgrupo = postulanteservice.postulantegrupo(grupodtor.getId());
 
 		return ResponseEntity.ok(postulantesgrupo);
-	}
-
-	@PostMapping("/postulantenotasi")
-	public ResponseEntity<?> ListaPostulanteNotasI(@RequestBody List<PostulanteNotasIDtoR> postulantesi)
-			throws Exception {
-		Map<String, Object> response = new HashMap<>();
-		postulanteservice.postulantenotasi(postulantesi);
-		// Hacer Validaciones
-		// Cual es el criterio segun la Nota para que el Alumno pase de ser Postulante a
-		// ser Ingresante
-
-		// Periodo periodo = periodoservice.findByid(grupodtor.getPeriodo_id());
-		// if (periodo == null){
-		response.put("resultado", 0);
-		response.put("mensaje", "Proceso de Notas generado correctamente");
-		response.put("dato", "");
-		return ResponseEntity.ok(response);
-
-		// }
-
-		// List<PostulanteNotasDto> postulantesnotaso =
-		// postulanteservice.postulantenotaso(grupodtor.getPeriodo_id());
-		// return ResponseEntity.ok(postulantesnotaso);
 	}
 
 	@PostMapping("/edita")
@@ -489,60 +464,67 @@ public class PostulanteController {
 		String to = "";
 		String subject = "";
 		String body = "";
-
-		Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
-		postulanteedita.setEstado_postulante("P");
-		postulanteservice.save(postulanteedita);
-		response.put("resultado", 1);
-		response.put("mensaje", "Estado Postulante apto para rendir examen");
-
-		Persona persona = personaservice.read(postulanteedita.getPersonaid());
-
-		to = persona.getEmail();
-		subject = "Situación de Postulante - Proceso de Admisión UPP";
-		PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
-
-		body = "<!DOCTYPE html>" +
-				"<html lang=\"es\">" +
-				"<head>" +
-				"<meta charset=\"UTF-8\">" +
-				"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
-				"<title>Habilitación para Examen de Ingreso</title>" +
-				"</head>" +
-				"<body style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;\">"
-				+
-				"<div style=\"max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-				+
-				"<div style=\"text-align: center; margin-bottom: 20px;\">" +
-				"<img src=\"https://uapvirtual.uap.edu.pe:8443/archivos/55031722350534804.png\" alt=\"Logo Universidad Politécnica del Perú\" style=\"max-width: 150px; height: auto;\">"
-				+
-				"</div>" +
-				"<h1 style=\"color: #4544a7; text-align: center;\">Habilitación para Examen de Ingreso</h1>" +
-				"<p>Estimado Postulante,</p>" +
-				"<p>" + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " + persona.getNombre()
-				+ ", identificado con documento de identidad número <strong>" + persona.getNrodocumento()
-				+ "</strong>,</p>" +
-				"<p>Se le informa que usted ha quedado habilitado para rendir el examen de ingreso a la Universidad Politécnica del Perú. Se adjunta información sobre la ubicación y acceso:</p>"
-				+
-				"<p><strong>Lugar del Examen:</strong> Calle Pedro Ruiz 251 - Pueblo Libre - Lima</p>" +
-				"<p><strong>Código de Postulante:</strong> " + postulanteedita.getCodigo() + "</p>" +
-				"<p><strong>Password de Acceso:</strong> " + postpas.getPassword() + "</p>" +
-				"<div style=\"text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;\">" +
-				"Oficina de Admisión<br>" +
-				"Universidad Politécnica del Perú" +
-				"</div>" +
-				"</div>" +
-				"</body>" +
-				"</html>";
-
-		try {
-			emailService.sendHtmlEmail(to, subject, body);
-			// return "Email HTML enviado con éxito!";
-		} catch (MessagingException e) {
-			System.out.println(e.getMessage());
+	
+		MigraAcadDto resultado = postulanteservice.executeActualizarEstado(postulanteDtor.getId());
+	
+		if (resultado.getCodigo() == 1) {
+			Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
+			postulanteedita.setEstado_postulante("P");
+			postulanteservice.save(postulanteedita);
+	
+			response.put("resultado", 1);
+			response.put("mensaje", "Estado Postulante apto para rendir examen");
+	
+			Persona persona = personaservice.read(postulanteedita.getPersonaid());
+	
+			to = persona.getEmail();
+			subject = "Situación de Postulante - Proceso de Admisión UPP";
+			PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
+	
+			body = "<!DOCTYPE html>" +
+					"<html lang=\"es\">" +
+					"<head>" +
+					"<meta charset=\"UTF-8\">" +
+					"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+					"<title>Habilitación para Examen de Ingreso</title>" +
+					"</head>" +
+					"<body style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;\">"
+					+
+					"<div style=\"max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
+					+
+					"<div style=\"text-align: center; margin-bottom: 20px;\">" +
+					"<img src=\"https://uapvirtual.uap.edu.pe:8443/archivos/55031722350534804.png\" alt=\"Logo Universidad Politécnica del Perú\" style=\"max-width: 150px; height: auto;\">"
+					+
+					"</div>" +
+					"<h1 style=\"color: #4544a7; text-align: center;\">Habilitación para Examen de Ingreso</h1>" +
+					"<p>Estimado Postulante,</p>" +
+					"<p>" + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " + persona.getNombre()
+					+ ", identificado con documento de identidad número <strong>" + persona.getNrodocumento()
+					+ "</strong>,</p>" +
+					"<p>Se le informa que usted ha quedado habilitado para rendir el examen de ingreso a la Universidad Politécnica del Perú. Se adjunta información sobre la ubicación y acceso:</p>"
+					+
+					"<p><strong>Lugar del Examen:</strong> Calle Pedro Ruiz 251 - Pueblo Libre - Lima</p>" +
+					"<p><strong>Código de Postulante:</strong> " + postulanteedita.getCodigo() + "</p>" +
+					"<p><strong>Password de Acceso:</strong> " + postpas.getPassword() + "</p>" +
+					"<div style=\"text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;\">" +
+					"Oficina de Admisión<br>" +
+					"Universidad Politécnica del Perú" +
+					"</div>" +
+					"</div>" +
+					"</body>" +
+					"</html>";
+			try {
+				emailService.sendHtmlEmail(to, subject, body);
+			} catch (MessagingException e) {
+				System.out.println(e.getMessage());
+			}
+	
+			response.put("dato", postulanteedita);
+		} else {
+			response.put("resultado", 0);
+			response.put("mensaje", resultado.getDescripcion());
 		}
-
-		response.put("dato", postulanteedita);
+	
 		return ResponseEntity.ok(response);
 	}
 

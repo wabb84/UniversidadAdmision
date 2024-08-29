@@ -8,6 +8,7 @@ import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,6 +105,7 @@ public class PagoServiceImpl implements PagoService {
         HttpStatus statusCode = (HttpStatus) response.getStatusCode();
         String responseBody = response.getBody();
 
+
         ObjectMapper objectMapper = new ObjectMapper();
         RespuestaAutorizacionDto resultado = new RespuestaAutorizacionDto();
 
@@ -163,9 +165,11 @@ public class PagoServiceImpl implements PagoService {
             } else {
                 throw new RuntimeException("Error inesperado: " + statusCode);
             }
-        } catch (IOException e) {
+
+        }  catch (IOException e) {
             throw new RuntimeException("Error al deserializar la respuesta: " + e.getMessage(), e);
         }
         return resultado;
     }
+
 }

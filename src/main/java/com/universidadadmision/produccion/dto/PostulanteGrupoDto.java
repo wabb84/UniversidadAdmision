@@ -9,6 +9,8 @@ public interface PostulanteGrupoDto {
 
 	String getNombre();
 
+	String getnombre_modalidad();
+
 	String getApellido_paterno();
 
 	String getApellido_materno();

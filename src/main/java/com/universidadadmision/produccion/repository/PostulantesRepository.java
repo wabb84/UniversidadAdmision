@@ -39,7 +39,7 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 			+ "   inner join General.Carrera f on f.id = h.carrera_id\r\n"
 			+ "   inner join General.Sede g on g.id = h.sede_id\r\n"
 			+ "   inner join General.Ubigeo i on i.id = b.ubigeo_id\r\n"
-			+ "   order by a.id", nativeQuery = true)
+			+ "   where a.estado_postulante !='B' order by a.id", nativeQuery = true)
 	public List<PostulantesDto> ListaGrupo();
 
 	public List<Postulantes> findByPersonaidAndVacanteid(Long idpersona, Long idvacante);
@@ -65,16 +65,17 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public List<PostulanteNotasDto> PostulanteNotasO(Long periodoid);
 
 	@Transactional(readOnly = true)
-	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,d.id as codcarrera,\r\n"
+	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,d.id as codcarrera,h.nombre as nombre_modalidad,\r\n"
 			+ "e.id as codsede, d.nombre as carrera, e.nombre as sede, a.estado_postulante as estado, a.nota as nota, isnull(a.estado_puntaje,'') as estadopuntaje,\r\n"
 			+ "g.descripcion as tipodocumento, f.nro_documento as nrodocumento,f.email,f.celular,f.telefono,f.discapacidad,f.carnet_conadis as carnetconadis\r\n"
-			+ " from Admision.postulantes a\r\n"
-			+ "   inner join admision.vacantes b on b.id = a.vacante_id\r\n"
-			+ "   inner join general.periodo c on c.id = b.periodo_id\r\n"
+			+ " from Admision.Postulantes a\r\n"
+			+ "   inner join Admision.Vacantes b on b.id = a.vacante_id\r\n"
+			+ "   inner join General.periodo c on c.id = b.periodo_id\r\n"
 			+ "   inner join General.Carrera d on d.id = b.carrera_id\r\n"
 			+ "   inner join General.Sede e on e.id = b.sede_id\r\n"
 			+ "   inner join General.persona f on f.id = a.persona_id\r\n"
 			+ "   inner join General.Catalogo g on f.cat_tipo_documento_id=g.id\r\n"
+			+ "   inner join Admision.Modalidad h on a.modalidad_ingreso_id=h.id\r\n"
 			+ "   where a.grupo_id = :grupoid and a.estado_postulante in ('P','I','A')", nativeQuery = true)
 
 	public List<PostulanteGrupoDto> PostulantexGrupo(Long grupoid);
