@@ -145,7 +145,7 @@ public class GrupoController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/cargarnotas")
+	@PostMapping("/cargar-vacantes")
 	public ResponseEntity<?> CargaNotasGrupo(@RequestBody CargaNotasDtoR carganotas) throws Exception {
 		Map<String, Object> response = new HashMap<>();
 		MigraAcadDto migraacad = gruposervice.executeCargarNotas(carganotas.getId());
@@ -155,7 +155,23 @@ public class GrupoController {
 			response.put("dato", migraacad);
 		} else {
 			response.put("resultado", 1);
-			response.put("mensaje", "Traslado de Notas Ejecutado con éxito");
+			response.put("mensaje", "Traslado de notas ejecutado con éxito");
+			response.put("dato", migraacad);
+		}
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/cargar-notas-evaluaciones")
+	public ResponseEntity<?> CargaNotasEvaluaciones(@RequestBody CargaNotasDtoR carganotas) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		MigraAcadDto migraacad = gruposervice.executeCargarNotasEvaluaciones(carganotas.getId());
+		if (migraacad.getCodigo() == 0) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al realizar la carga de notas : " + migraacad.getDescripcion());
+			response.put("dato", migraacad);
+		} else {
+			response.put("resultado", 1);
+			response.put("mensaje", "Carga de notas ejecutado con éxito");
 			response.put("dato", migraacad);
 		}
 		return ResponseEntity.ok(response);

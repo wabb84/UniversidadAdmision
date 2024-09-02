@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteEstadoDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
@@ -41,6 +42,8 @@ public interface PostulantesService {
 
 	public List<PostulanteGrupoDto> postulantegrupo(Long grupoid);
 
+	public List<PostulanteGrupoDto> postulanteGeneralgrupo(Long grupoid);
+
 	public PostulantesDto PostulantePassword(Long id);
 
 	public Postulantes actualizarPreRegistro(Long id, String nuevoEstado);
@@ -54,4 +57,6 @@ public interface PostulantesService {
 	public List<PostulanteRequisitoDto> obtenerRequisitoPostulante(Long postulanteId);
 
 	public MigraAcadDto executeActualizarEstado(Long postulanteId);
+
+	public List<PostulanteEstadoDto> listarEstadosPostulante();
 }

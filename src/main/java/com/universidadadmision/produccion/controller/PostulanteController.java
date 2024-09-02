@@ -21,6 +21,7 @@ import com.universidadadmision.produccion.components.EmailService;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.GrupoDtoR;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteEstadoDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
@@ -272,6 +273,12 @@ public class PostulanteController {
 		return ResponseEntity.ok(postulantelista);
 	}
 
+	@PostMapping("/lista-estados")
+	public ResponseEntity<?> ListaEstadosPostulante() throws Exception {
+		List<PostulanteEstadoDto> estadosPostulantelista = postulanteservice.listarEstadosPostulante();
+		return ResponseEntity.ok(estadosPostulantelista);
+	}
+
 	@PostMapping("/requisitos")
 	public ResponseEntity<?> ListaPostulanteRequisitos(@RequestBody PostulanteNotasIDtoR postulante) throws Exception {
 		List<PostulanteRequisitoDto> postulanterequisitolista = postulanterequisitoservice
@@ -297,18 +304,13 @@ public class PostulanteController {
 
 	@PostMapping("/postulantegrupo")
 	public ResponseEntity<?> ListaPostulanteGrupo(@RequestBody GrupoDtoR grupodtor) throws Exception {
-		// Map<String, Object> response = new HashMap<>();
-		/*
-		 * Periodo periodo = periodoservice.findByid(grupodtor.getPeriodo_id());
-		 * if (periodo == null){
-		 * response.put("resultado", 0);
-		 * response.put("mensaje", "Periodo Seleccionado no Existe");
-		 * response.put("dato","");
-		 * return ResponseEntity.ok(response);
-		 * }
-		 */
 		List<PostulanteGrupoDto> postulantesgrupo = postulanteservice.postulantegrupo(grupodtor.getId());
+		return ResponseEntity.ok(postulantesgrupo);
+	}
 
+	@PostMapping("/postulante-grupo")
+	public ResponseEntity<?> ListaPostulantesGrupo(@RequestBody GrupoDtoR grupodtor) throws Exception {
+		List<PostulanteGrupoDto> postulantesgrupo = postulanteservice.postulanteGeneralgrupo(grupodtor.getId());
 		return ResponseEntity.ok(postulantesgrupo);
 	}
 

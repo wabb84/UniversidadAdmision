@@ -4,24 +4,16 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GeneralDto;
+import com.universidadadmision.produccion.dto.PostulanteEstadoDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteRequisitoDto;
-import com.universidadadmision.produccion.dto.PostulanteRequisitoDtoR;
 import com.universidadadmision.produccion.dto.PostulantesDto;
-import com.universidadadmision.produccion.dto.PostulantesDtoR;
 import com.universidadadmision.produccion.dto.ValidaPostulanteDtoR;
 import com.universidadadmision.produccion.entity.Postulantes;
-
-//import jakarta.persistence.StoredProcedureQuery;
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.EntityManager;
-//import javax.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Repository
 public interface PostulantesRepository extends JpaRepository<Postulantes, Long> {
@@ -39,7 +31,7 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 			+ "   inner join General.Carrera f on f.id = h.carrera_id\r\n"
 			+ "   inner join General.Sede g on g.id = h.sede_id\r\n"
 			+ "   inner join General.Ubigeo i on i.id = b.ubigeo_id\r\n"
-			+ "   where a.estado_postulante !='B' order by a.id", nativeQuery = true)
+			+ "   order by a.id", nativeQuery = true)
 	public List<PostulantesDto> ListaGrupo();
 
 	public List<Postulantes> findByPersonaidAndVacanteid(Long idpersona, Long idvacante);
@@ -81,6 +73,23 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public List<PostulanteGrupoDto> PostulantexGrupo(Long grupoid);
 
 	@Transactional(readOnly = true)
+	@Query(value = "select a.id,c.anio_semestre as aniosemestre,a.codigo,f.nombre, f.apellido_paterno,f.apellido_materno,d.id as codcarrera,h.nombre as nombre_modalidad,\r\n"
+			+ "e.id as codsede, d.nombre as carrera, e.nombre as sede, i.descripcion as estado, a.nota as nota, isnull(a.estado_puntaje,'') as estadopuntaje,\r\n"
+			+ "g.descripcion as tipodocumento, f.nro_documento as nrodocumento,f.email,f.celular,f.telefono,f.discapacidad,f.carnet_conadis as carnetconadis\r\n"
+			+ " from Admision.Postulantes a\r\n"
+			+ "   inner join Admision.Vacantes b on b.id = a.vacante_id\r\n"
+			+ "   inner join General.periodo c on c.id = b.periodo_id\r\n"
+			+ "   inner join General.Carrera d on d.id = b.carrera_id\r\n"
+			+ "   inner join General.Sede e on e.id = b.sede_id\r\n"
+			+ "   inner join General.persona f on f.id = a.persona_id\r\n"
+			+ "   inner join General.Catalogo g on f.cat_tipo_documento_id=g.id\r\n"
+			+ "   inner join Admision.Modalidad h on a.modalidad_ingreso_id=h.id\r\n"
+			+ "   inner join Admision.Estado_Postulante i on a.estado_postulante=i.estado\r\n"
+			+ "   where a.grupo_id = :grupoid", nativeQuery = true)
+
+	public List<PostulanteGrupoDto> PostulantesGrupo(Long grupoid);
+
+	@Transactional(readOnly = true)
 	@Query(value = "SELECT CAST(DECRYPTBYPASSPHRASE('politecnica',password) AS CHAR(8)) as password \r\n"
 			+ "from Admision.Postulantes\r\n"
 			+ "WHERE id = :postulanteid \r\n", nativeQuery = true)
@@ -119,4 +128,10 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 			"from Admision.Postulantes_Requisitos " +
 			"where postulante_id = :postulanteId", nativeQuery = true)
 	List<PostulanteRequisitoDto> findRequisitosByPostulanteId(Long postulanteId);
+
+	@Transactional(readOnly = true)
+	@Query(value = "select estado as codigo, descripcion, orden from Admision.Estado_Postulante order by 3", nativeQuery = true)
+	List<PostulanteEstadoDto> listarEstadosPostulante();
+
+
 }

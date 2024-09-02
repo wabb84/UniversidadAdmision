@@ -70,7 +70,7 @@ public interface PostulantesEvaluacionRepository extends JpaRepository<Postulant
                         "        pec.nota_criterio IS NOT NULL " +
                         "    GROUP BY " +
                         "        pe.postulante_id " +
-                        ") x ON a.id = x.postulante_id", nativeQuery = true)
+                        ") x ON a.id = x.postulante_id where a.grupo_id = :grupoId", nativeQuery = true)
         public List<PostulantesEvaluacionDto> listaPostulantesEvaluacion(Long grupoId);
 
         @Transactional(readOnly = true)

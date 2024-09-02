@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteEvaluacionDtoR;
+import com.universidadadmision.produccion.dto.PostulantesDto;
+import com.universidadadmision.produccion.dto.PostulantesDtoR;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionesCriterioDto;
 import com.universidadadmision.produccion.dto.PostulantesEvaluacionesDto;
@@ -35,22 +38,22 @@ public class PostulanteEvaluacionController {
     @Autowired
     private PostulantesEvaluacionCriterioService postulantesEvaluacionCriterioService;
 
-    @GetMapping("/lista")
-    public ResponseEntity<?> listaPostulantes(@RequestParam("grupoId") Long grupoId) {
+    @PostMapping("/lista")
+    public ResponseEntity<?> listaPostulantes(@RequestBody PostulantesDtoR postulanteDto) {
         try {
             List<PostulantesEvaluacionDto> postulantes = postulantesEvaluacionService
-                    .listaPostulantesEvaluacion(grupoId);
+                    .listaPostulantesEvaluacion(postulanteDto.getId());
             return ResponseEntity.ok(postulantes);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al listar los postulantes de evaluación: " + e.getMessage());
         }
     }
 
-    @GetMapping("/buscar")
-    public ResponseEntity<?> buscarPorPostulanteId(@RequestParam("postulanteId") Long postulanteId) throws Exception {
+    @PostMapping("/buscar")
+    public ResponseEntity<?> buscarPorPostulanteId(@RequestBody PostulantesDtoR postulanteDto) throws Exception {
         try {
             List<PostulantesEvaluacionesDto> postulantesEvaluacionList = postulantesEvaluacionService
-                    .findByPostulanteId(postulanteId);
+                    .findByPostulanteId(postulanteDto.getId());
 
             return ResponseEntity.ok(postulantesEvaluacionList);
         } catch (Exception e) {
@@ -59,28 +62,24 @@ public class PostulanteEvaluacionController {
         }
     }
 
-    @GetMapping("/buscar-detalle")
+    @PostMapping("/buscar-detalle")
     public ResponseEntity<?> buscarPorPostulanteEvaluacionId(
-            @RequestParam("postulanteEvaluacionId") Long postulanteEvaluacionId)
+        @RequestBody PostulantesDtoR postulanteDto)
             throws Exception {
         try {
             List<PostulantesEvaluacionesCriterioDto> postulantesEvaluacionList = postulantesEvaluacionCriterioService
-                    .findByPostulanteEvaluacionId(postulanteEvaluacionId);
+                    .findByPostulanteEvaluacionId(postulanteDto.getId());
             return ResponseEntity.ok(postulantesEvaluacionList);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al listar los criterios de evaluación: " + e.getMessage());
         }
     }
 
-    @PutMapping("/actualizar-detalle/{id}/{nota}")
+    @PostMapping("/actualizar-detalle")
     public ResponseEntity<?> updateNotaCriterio(
-        @PathVariable Long id,
-        @PathVariable Long nota) {
-
+        @RequestBody PostulanteEvaluacionDtoR postulanteDto) {
        Map<String, Object> response = new HashMap<>();
-
-		MigraAcadDto migraacad = postulantesEvaluacionCriterioService.executeActualizarNota(id, nota);
-
+		MigraAcadDto migraacad = postulantesEvaluacionCriterioService.executeActualizarNota(postulanteDto.getId(), postulanteDto.getNota());
 		if (migraacad.getCodigo() == 0) {
 			response.put("resultado", 0);
 			response.put("mensaje", "Error al actualizar nota de postulante : " + migraacad.getDescripcion());

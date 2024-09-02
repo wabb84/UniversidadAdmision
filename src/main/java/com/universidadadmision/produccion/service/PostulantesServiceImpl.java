@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.GeneralDto;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.PostulanteEstadoDto;
 import com.universidadadmision.produccion.dto.PostulanteGrupoDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasDto;
 import com.universidadadmision.produccion.dto.PostulanteNotasIDtoR;
@@ -180,6 +181,16 @@ public class PostulantesServiceImpl implements PostulantesService {
 		resultado.setDescripcion((String) out.get("pMensaje"));
 
 		return resultado;
+	}
+
+	@Override
+	public List<PostulanteEstadoDto> listarEstadosPostulante() {
+		return postulantesrep.listarEstadosPostulante();
+	}
+
+	@Override
+	public List<PostulanteGrupoDto> postulanteGeneralgrupo(Long grupoid) {
+		return postulantesrep.PostulantesGrupo(grupoid);
 	}
 
 }

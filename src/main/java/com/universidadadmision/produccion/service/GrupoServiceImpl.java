@@ -72,5 +72,25 @@ public class GrupoServiceImpl implements GrupoService {
 		resultado.setDescripcion((String) out.get("pMensaje"));
 
         return resultado;
-	};
+	}
+
+	@Override
+	public MigraAcadDto executeCargarNotasEvaluaciones(Long periodoid) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("paCargarNotasEvaluaciones")
+                .withSchemaName("Admision") 
+                .declareParameters(
+                        new SqlParameter("pIdPeriodo", Types.INTEGER),
+                        new SqlOutParameter("pResultado", Types.INTEGER),
+                        new SqlOutParameter("pMensaje", Types.VARCHAR)
+                );
+		
+		Map<String, Object> out = simpleJdbcCall.execute(
+			periodoid
+        );
+		MigraAcadDto resultado = new MigraAcadDto();
+		resultado.setCodigo((Integer) out.get("pResultado"));
+		resultado.setDescripcion((String) out.get("pMensaje"));
+
+        return resultado;};
 }

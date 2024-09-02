@@ -132,9 +132,10 @@ public class ModalidadController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/listar-evaluaciones")
-	public ResponseEntity<?> ListarEvaluaciones(@RequestParam("modalidadId") Long modalidadId) throws Exception {
-		List<ModalidadEvaluacionDto> modadlidadEvaluacion = modalidadservice.listarEvaluaciones(modalidadId);
+	@PostMapping("/listar-evaluaciones")
+	public ResponseEntity<?> ListarEvaluaciones(@RequestBody ModalidadDtoR modalidadDtor) throws Exception {
+		
+		List<ModalidadEvaluacionDto> modadlidadEvaluacion = modalidadservice.listarEvaluaciones(modalidadDtor.getId());
 		return ResponseEntity.ok(modadlidadEvaluacion);
 	}
 }

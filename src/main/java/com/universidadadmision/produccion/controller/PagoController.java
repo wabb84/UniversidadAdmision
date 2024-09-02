@@ -15,10 +15,12 @@ import com.universidadadmision.produccion.service.PagoService;
 import com.universidadadmision.produccion.service.PostulantesService;
 import com.universidadadmision.produccion.service.TransaccionService;
 import com.universidadadmision.produccion.dto.SolicitudPagoDto;
+import com.universidadadmision.produccion.dto.TransaccionDto;
 import com.universidadadmision.produccion.entity.Postulantes;
 import com.universidadadmision.produccion.entity.Transaccion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.universidadadmision.produccion.dto.MigraAcadDto;
+import com.universidadadmision.produccion.dto.ModalidadDtoR;
 import com.universidadadmision.produccion.dto.RespuestaAutorizacionDto;
 import com.universidadadmision.produccion.dto.RespuestaTokenSesionDto;
 import com.universidadadmision.produccion.dto.SolicitudAutorizacionDto;
@@ -85,31 +87,26 @@ public class PagoController {
             if (respuesta.getTipoRespuesta() == "exito") {
                 MigraAcadDto migraacad  = postulantesService.executeActivarPago(purchaseNumber);
                 System.out.println("respuesta sp actualizar estado pagado");
-
-            } else {
-                System.out.println("respuesta erronea de autorizacion de nuibiz");
-                return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
-                //return new RedirectView("http://localhost:3000/finalizacion-pago/error");
-            }
+            } 
             // validar estado pago
-            //String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
-            String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
+            String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
+            //String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
-            System.out.println("hasssss");
-            System.out.println(e.getMessage());
+            System.out.println("error en pago");
+            System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
             return new RedirectView("https://inscripciones.politecnica.edu.pe/finalizacion-pago/error");
             //return new RedirectView("http://localhost:3000/finalizacion-pago/error");
         }
     }
 
-    @GetMapping("/consultar-transaccion")
-    public ResponseEntity<?> consultarPorNumeroTransaccion(@RequestParam("purchaseNumber") String purchaseNumber) {
+    @PostMapping("/consultar-transaccion")
+    public ResponseEntity<?> consultarPorNumeroTransaccion(@RequestBody TransaccionDto transaccionDto) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Transaccion transaccion = transaccionService.findByPurchaseNumber(purchaseNumber);
+            Transaccion transaccion = transaccionService.findByPurchaseNumber(transaccionDto.getPurchaseNumber());
             if (transaccion != null) {
                 response.put("resultado", 1);
                 response.put("mensaje", "Transacción encontrada");

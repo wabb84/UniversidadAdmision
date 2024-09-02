@@ -18,4 +18,6 @@ public interface GrupoService {
 	public List<Grupo> listarxperiodo(Long periodoid, Long tipoingresoid);
 
 	public MigraAcadDto executeCargarNotas(Long periodoid);
+
+	public MigraAcadDto executeCargarNotasEvaluaciones(Long periodoid);
 }
