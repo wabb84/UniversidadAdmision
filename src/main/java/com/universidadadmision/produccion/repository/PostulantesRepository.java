@@ -21,7 +21,8 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	@Transactional(readOnly = true)
 	@Query(value = "select a.id, a.persona_id as personaid,b.cat_tipo_documento_id as idtipodoc,c.abreviatura as tipodocumento, b.apellido_paterno, b.apellido_materno, b.nombre,b.nro_documento,i.departamento,i.provincia,i.distrito,\r\n"
 			+ "   a.vacante_id,a.codigo,a.grupo_id,d.nombre as nombregrupo,a.modalidad_ingreso_id,e.nombre as nombremodalidad,a.estado_postulante,a.estado_auditoria as estado,b.discapacidad,b.carnet_conadis as carnetconadis,\r\n"
-			+ "   b.sexo,b.direccion,b.email,b.fecha_nacimiento,b.celular,b.telefono,b.ubigeo_id,h.periodo_id as id_periodo,f.id as id_carrera, f.nombre as carrera,g.id as id_sede, g.nombre as sede\r\n"
+			+ "   b.sexo,b.direccion,b.email,b.fecha_nacimiento,b.celular,b.telefono,b.ubigeo_id,h.periodo_id as id_periodo,f.id as id_carrera, f.nombre as carrera,g.id as id_sede, g.nombre as sede, \r\n"
+			+ "   case when modified_at is null then created_at else modified_at end as ts_movimiento \r\n"
 			+ "   from Admision.postulantes a\r\n"
 			+ "   inner join general.persona b on b.id = a.persona_id\r\n"
 			+ "	  inner join general.Catalogo c on c.id = b.cat_tipo_documento_id\r\n"
@@ -31,7 +32,7 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 			+ "   inner join General.Carrera f on f.id = h.carrera_id\r\n"
 			+ "   inner join General.Sede g on g.id = h.sede_id\r\n"
 			+ "   inner join General.Ubigeo i on i.id = b.ubigeo_id\r\n"
-			+ "   order by a.id", nativeQuery = true)
+			+ "   order by case when modified_at is null then created_at else modified_at end", nativeQuery = true)
 	public List<PostulantesDto> ListaGrupo();
 
 	public List<Postulantes> findByPersonaidAndVacanteid(Long idpersona, Long idvacante);
@@ -97,7 +98,7 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public PostulantesDto PostulantePassword(Long postulanteid);
 
 	@Transactional(readOnly = true)
-	@Query(value = "select a.id, a.codigo,1 as pedido,a.estado_postulante as estado \r\n"
+	@Query(value = "select a.id, a.codigo,1 as pedido,case when a.estado_postulante ='B' then 'B' else 'R' end as estado \r\n"
 			+ "from Admision.Postulantes a\r\n"
 			+ "where a.persona_id = (select id from General.Persona where cat_tipo_documento_id =:idtipodoc and nro_documento=:numeroDoc) \r\n"
 			+ "and vacante_id  in (select id from Admision.Vacantes where periodo_id = :periodoid)", nativeQuery = true)
@@ -105,7 +106,7 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	public ValidaPostulanteDtoR validarPostulante(Long idtipodoc, String numeroDoc, Long periodoid);
 
 	@Transactional(readOnly = true)
-	@Query(value = "select a.id, 	b.cat_tipo_documento_id as idtipodoc, b.nro_documento as nro_documento, \r\n"
+	@Query(value = "select a.id, b.cat_tipo_documento_id as idtipodoc, b.nro_documento as nro_documento, \r\n"
 			+ "b.apellido_paterno, b.apellido_materno, b.nombre, b.sexo, b.email, b.celular, b.telefono, \r\n"
 			+ "b.fecha_nacimiento, b.direccion, d.carrera_id as id_carrera, d.sede_id as id_sede, \r\n"
 			+ "d1.carrera_id as segunda_id_carrera, b.ubigeo_id, i.departamento, i.provincia, i.distrito, \r\n"
@@ -132,6 +133,5 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	@Transactional(readOnly = true)
 	@Query(value = "select estado as codigo, descripcion, orden from Admision.Estado_Postulante order by 3", nativeQuery = true)
 	List<PostulanteEstadoDto> listarEstadosPostulante();
-
 
 }

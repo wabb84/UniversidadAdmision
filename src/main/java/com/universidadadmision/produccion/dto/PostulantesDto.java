@@ -74,5 +74,7 @@ public interface PostulantesDto {
 
 	String getCarnetconadis();
 
+	String getts_movimiento();
+
 	List<PostulanteRequisitoDtoR> getRequisitos();
 }

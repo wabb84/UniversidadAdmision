@@ -195,6 +195,7 @@ public class PostulanteController {
 		if (valida != null) {
 			response.put("resultado", 0);
 			response.put("mensaje", "Postulante ya registrado");
+			
 			response.put("dato", valida);
 			return ResponseEntity.ok(response);
 		} else {

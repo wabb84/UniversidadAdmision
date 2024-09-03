@@ -89,8 +89,8 @@ public class PagoController {
                 System.out.println("respuesta sp actualizar estado pagado");
             } 
             // validar estado pago
-            String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
-            //String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
+            //String redirectUrl = "http://localhost:3000/finalizacion-pago/" + purchaseNumber;
+            String redirectUrl = "https://inscripciones.politecnica.edu.pe/finalizacion-pago/" + purchaseNumber;
             return new RedirectView(redirectUrl);
 
         } catch (Exception e) {
