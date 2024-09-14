@@ -59,4 +59,8 @@ public interface PostulantesService {
 	public MigraAcadDto executeActualizarEstado(Long postulanteId);
 
 	public List<PostulanteEstadoDto> listarEstadosPostulante();
+
+	public void eliminarRequisitosPostulante(Long id, Long requisitoId);
+
+	public int actualizarModalidadPostulante(Long id, Long grupoId, Long modalidadId);
 }

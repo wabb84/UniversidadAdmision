@@ -58,6 +58,8 @@ public interface PostulantesDto {
 
 	String getCarrera();
 
+	String getsegunda_carrera();
+
 	Long getid_sede();
 
 	String getSede();

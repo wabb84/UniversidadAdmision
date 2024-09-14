@@ -49,7 +49,6 @@ import com.universidadadmision.produccion.service.VacantesService;
 
 import jakarta.mail.MessagingException;
 
-
 @RestController
 @CrossOrigin
 @RequestMapping("/postulantes")
@@ -195,7 +194,7 @@ public class PostulanteController {
 		if (valida != null) {
 			response.put("resultado", 0);
 			response.put("mensaje", "Postulante ya registrado");
-			
+
 			response.put("dato", valida);
 			return ResponseEntity.ok(response);
 		} else {
@@ -467,23 +466,23 @@ public class PostulanteController {
 		String to = "";
 		String subject = "";
 		String body = "";
-	
+
 		MigraAcadDto resultado = postulanteservice.executeActualizarEstado(postulanteDtor.getId());
-	
+
 		if (resultado.getCodigo() == 1) {
 			Postulantes postulanteedita = postulanteservice.read(postulanteDtor.getId());
 			postulanteedita.setEstado_postulante("P");
 			postulanteservice.save(postulanteedita);
-	
+
 			response.put("resultado", 1);
 			response.put("mensaje", "Estado Postulante apto para rendir examen");
-	
+
 			Persona persona = personaservice.read(postulanteedita.getPersonaid());
-	
+
 			to = persona.getEmail();
 			subject = "Situación de Postulante - Proceso de Admisión UPP";
 			PostulantesDto postpas = postulanteservice.PostulantePassword(postulanteDtor.getId());
-	
+
 			body = "<!DOCTYPE html>" +
 					"<html lang=\"es\">" +
 					"<head>" +
@@ -501,7 +500,8 @@ public class PostulanteController {
 					"</div>" +
 					"<h1 style=\"color: #4544a7; text-align: center;\">Habilitación para Examen de Ingreso</h1>" +
 					"<p>Estimado Postulante,</p>" +
-					"<p>" + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " " + persona.getNombre()
+					"<p>" + persona.getApellido_paterno() + " " + persona.getApellido_materno() + " "
+					+ persona.getNombre()
 					+ ", identificado con documento de identidad número <strong>" + persona.getNrodocumento()
 					+ "</strong>,</p>" +
 					"<p>Se le informa que usted ha quedado habilitado para rendir el examen de ingreso a la Universidad Politécnica del Perú. Se adjunta información sobre la ubicación y acceso:</p>"
@@ -521,13 +521,13 @@ public class PostulanteController {
 			} catch (MessagingException e) {
 				System.out.println(e.getMessage());
 			}
-	
+
 			response.put("dato", postulanteedita);
 		} else {
 			response.put("resultado", 0);
 			response.put("mensaje", resultado.getDescripcion());
 		}
-	
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -576,6 +576,93 @@ public class PostulanteController {
 		response.put("resultado", 1);
 		response.put("mensaje", "Postulante eliminado correctamente");
 		response.put("dato", postulanteselimina);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/registrar-requisitos")
+	public ResponseEntity<?> RegistrarRequisitos(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			List<PostulanteRequisitoDtoR> postreq = postulanteDtor.getRequisitos();
+			for (PostulanteRequisitoDtoR requisitoslista : postreq) {
+				postulanteservice.eliminarRequisitosPostulante(postulanteDtor.getId(),
+						requisitoslista.getRequisitomodalidadid());
+				PostulantesRequisitos postulanterequinew = new PostulantesRequisitos();
+				postulanterequinew.setPostulanteid(postulanteDtor.getId());
+				postulanterequinew.setRequisitomodalidadid(requisitoslista.getRequisitomodalidadid());
+				postulanterequinew.setUrl(requisitoslista.getUrl());
+				postulanterequinew.setRequisitovalidado("P");
+				postulanterequinew.setEstado(true);
+				postulanterequisitoservice.save(postulanterequinew);
+			}
+
+		} catch (Exception e) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al guardar requisitos del postulante : " + e.getMessage());
+			response.put("dato", "");
+			return ResponseEntity.ok(response);
+		}
+
+		response.put("resultado", 1);
+		response.put("mensaje", "Requisitos del postulante guardados exitosamente.");
+		response.put("dato", null);
+		// response.put("dato","");
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/eliminar-requisito")
+	public ResponseEntity<?> EliminarRequisito(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			List<PostulanteRequisitoDtoR> postreq = postulanteDtor.getRequisitos();
+			for (PostulanteRequisitoDtoR requisitoslista : postreq) {
+				postulanteservice.eliminarRequisitosPostulante(postulanteDtor.getId(),
+						requisitoslista.getRequisitomodalidadid());
+			}
+		} catch (Exception e) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al eliminar requisito del postulante : " + e.getMessage());
+			response.put("dato", "");
+			return ResponseEntity.ok(response);
+		}
+
+		response.put("resultado", 1);
+		response.put("mensaje", "Requisito eliminado satisfactoriamente.");
+		response.put("dato", null);
+		// response.put("dato","");
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/actualizar-modalidad")
+	public ResponseEntity<?> actualizarPostulante(@RequestBody PostulantesDtoR postulanteDtor) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			int filasAfectadas = postulanteservice.actualizarModalidadPostulante(
+					postulanteDtor.getId(),
+					postulanteDtor.getGrupoid(),
+					postulanteDtor.getModalidadid());
+
+			if (filasAfectadas > 0) {
+				response.put("resultado", 1);
+				response.put("mensaje", "Postulante actualizado exitosamente.");
+			} else {
+				response.put("resultado", 0);
+				response.put("mensaje", "No se encontraron registros para actualizar.");
+			}
+
+			response.put("dato", null);
+		} catch (Exception e) {
+			response.put("resultado", 0);
+			response.put("mensaje", "Error al actualizar postulante : " +
+					e.getMessage());
+			response.put("dato", "");
+		}
+
 		return ResponseEntity.ok(response);
 	}
 }

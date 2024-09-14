@@ -3,7 +3,9 @@ package com.universidadadmision.produccion.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.universidadadmision.produccion.dto.GeneralDto;
@@ -22,17 +24,19 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	@Query(value = "select a.id, a.persona_id as personaid,b.cat_tipo_documento_id as idtipodoc,c.abreviatura as tipodocumento, b.apellido_paterno, b.apellido_materno, b.nombre,b.nro_documento,i.departamento,i.provincia,i.distrito,\r\n"
 			+ "   a.vacante_id,a.codigo,a.grupo_id,d.nombre as nombregrupo,a.modalidad_ingreso_id,e.nombre as nombremodalidad,a.estado_postulante,a.estado_auditoria as estado,b.discapacidad,b.carnet_conadis as carnetconadis,\r\n"
 			+ "   b.sexo,b.direccion,b.email,b.fecha_nacimiento,b.celular,b.telefono,b.ubigeo_id,h.periodo_id as id_periodo,f.id as id_carrera, f.nombre as carrera,g.id as id_sede, g.nombre as sede, \r\n"
-			+ "   case when modified_at is null then created_at else modified_at end as ts_movimiento \r\n"
+			+ "   f1.id as segunda_id_carrera, f1.nombre as segunda_carrera,case when a.modified_at is null then a.created_at else a.modified_at end as ts_movimiento \r\n"
 			+ "   from Admision.postulantes a\r\n"
 			+ "   inner join general.persona b on b.id = a.persona_id\r\n"
 			+ "	  inner join general.Catalogo c on c.id = b.cat_tipo_documento_id\r\n"
 			+ "	  inner join Admision.grupo d on d.id = a.grupo_id\r\n"
 			+ "	  inner join Admision.modalidad e on e.id = a.modalidad_ingreso_id\r\n"
 			+ "	  inner join admision.vacantes h on h.id = a.vacante_id\r\n"
+			+ "	  inner join admision.vacantes h1 on h1.id = a.segunda_vacante_id\r\n"
 			+ "   inner join General.Carrera f on f.id = h.carrera_id\r\n"
+			+ "   inner join General.Carrera f1 on f1.id = h1.carrera_id\r\n"
 			+ "   inner join General.Sede g on g.id = h.sede_id\r\n"
 			+ "   inner join General.Ubigeo i on i.id = b.ubigeo_id\r\n"
-			+ "   order by case when modified_at is null then created_at else modified_at end", nativeQuery = true)
+			+ "   order by case when a.modified_at is null then a.created_at else a.modified_at end", nativeQuery = true)
 	public List<PostulantesDto> ListaGrupo();
 
 	public List<Postulantes> findByPersonaidAndVacanteid(Long idpersona, Long idvacante);
@@ -134,4 +138,13 @@ public interface PostulantesRepository extends JpaRepository<Postulantes, Long> 
 	@Query(value = "select estado as codigo, descripcion, orden from Admision.Estado_Postulante order by 3", nativeQuery = true)
 	List<PostulanteEstadoDto> listarEstadosPostulante();
 
+	@Transactional
+	@Modifying
+	@Query(value = "delete from Admision.Postulantes_Requisitos where postulante_id = :id and requisito_modalidad_id = :requisitoId", nativeQuery = true)
+	void eliminarRequisitosPorPostulanteId(Long id, Long requisitoId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "update Admision.Postulantes set grupo_id = :grupoId, modalidad_ingreso_id = :modalidadId where id = :id", nativeQuery = true)
+	int actualizarModalidadPostulante(Long id, Long grupoId, Long modalidadId);
 }

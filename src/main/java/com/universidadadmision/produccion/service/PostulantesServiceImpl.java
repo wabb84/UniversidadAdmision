@@ -193,4 +193,13 @@ public class PostulantesServiceImpl implements PostulantesService {
 		return postulantesrep.PostulantesGrupo(grupoid);
 	}
 
+	public void eliminarRequisitosPostulante(Long id, Long requisitoId) {
+		postulantesrep.eliminarRequisitosPorPostulanteId(id, requisitoId);
+	}
+
+	@Override
+	public int actualizarModalidadPostulante(Long id, Long grupoId, Long modalidadId) {
+		return postulantesrep.actualizarModalidadPostulante(id, grupoId, modalidadId);
+	}
+
 }
